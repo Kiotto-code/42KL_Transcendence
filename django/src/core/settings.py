@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'channels',
     'base',
     'provider',
 ]
@@ -152,8 +153,12 @@ STATIC_URL = '/static/'
 
 MEDIA_URL = 'images/'
 
+ASGI_APPLICATION = 'core.asgi.application'
+
+# output for python manage.py collectstatic
 STATIC_ROOT = BASE_DIR / 'static_files'
 
+#source(s) for python manage.py collectstatic
 STATICFILES_DIRS = [
     BASE_DIR / 'static',
 ]

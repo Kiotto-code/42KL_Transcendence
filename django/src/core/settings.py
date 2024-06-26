@@ -15,11 +15,11 @@ import os
 
 if os.environ.get('APP_ENV') is None:
     from dotenv import load_dotenv
+
     load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
@@ -32,7 +32,6 @@ DEBUG = True if os.environ.get('APP_ENV') == 'dev' else False
 # WARNING: '*' is for development only
 ALLOWED_HOSTS = ['*']
 CSRF_TRUSTED_ORIGINS = ['http://127.0.0.1:8000', 'http://localhost:8000']
-
 
 # Application definition
 
@@ -82,7 +81,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'core.wsgi.application'
 
-
 APP_URL = os.environ.get('APP_URL', 'http://localhost:8000')
 APP_ENV = os.environ.get('APP_ENV', 'dev')
 
@@ -96,8 +94,15 @@ DB_USER = os.environ.get("DB_USER")
 DB_HOST = os.environ.get("DB_HOST")
 DB_PORT = os.environ.get("DB_PORT")
 
-
-DATABASES = {
+if APP_ENV == 'dev' or DB_ENGINE is None:
+	DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
+    }
+else:
+    DATABASES = {
     "default": {
         "ENGINE": DB_ENGINE,
         "NAME": DB_NAME,
@@ -113,7 +118,6 @@ if APP_ENV == 'dev' or DB_ENGINE is None:
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'db.sqlite3',
     }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators
@@ -133,7 +137,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/5.0/topics/i18n/
 
@@ -145,15 +148,16 @@ USE_I18N = True
 
 USE_TZ = True
 
-
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 
 STATIC_URL = '/static/'
 
-MEDIA_URL = 'images/'
+MEDIA_URL = '/media/'
 
-ASGI_APPLICATION = 'core.asgi.application'
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+ASGI_APPLICATION = 'core.asgi.application' # Asynchronous and WebSockets support. If not provided, Django will fall back to the WSGI application.(poll)
 
 # output for python manage.py collectstatic
 STATIC_ROOT = BASE_DIR / 'static_files'
@@ -163,8 +167,7 @@ STATICFILES_DIRS = [
     BASE_DIR / 'static',
 ]
 
-MEDIA_ROOT = BASE_DIR / 'static/images'
-
+MEDIA_ROOT = BASE_DIR / 'media'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
@@ -199,9 +202,9 @@ SOCIALACCOUNT_ENABLED = True
 FT_OAUTH_SERVER_BASE_URL = os.environ.get('FT_OAUTH_SERVER_BASE_URL')
 
 SOCIALACCOUNT_PROVIDERS = {
-	'42': {
-		'APP': {
-			'client_id': os.environ.get('42OAUTH_CLIENT_ID'),
+    '42': {
+        'APP': {
+            'client_id': os.environ.get('42OAUTH_CLIENT_ID'),
             'secret': os.environ.get('42OAUTH_SECRET')
         }
     }

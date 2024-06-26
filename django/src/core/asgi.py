@@ -10,7 +10,19 @@ https://docs.djangoproject.com/en/5.0/howto/deployment/asgi/
 import os
 
 from django.core.asgi import get_asgi_application
+from channels.routing import ProtocolTypeRouter, URLRouter
+
+# from core import routing
+from . import routing # import routing.py -> websocket_urlpatterns
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'core.settings')
 
-# application = get_asgi_application()
+# application = get_asgi_application() # This is the default ASGI application. Only handle Http Convention
+
+
+application = ProtocolTypeRouter(
+    {
+        "http": get_asgi_application(), # Django ASGI application, auto find urls, views(py)
+        "websocket": URLRouter(routing.websocket_urlpatterns), # routings(url), consumers(views)
+    }
+)

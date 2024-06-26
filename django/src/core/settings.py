@@ -36,10 +36,11 @@ CSRF_TRUSTED_ORIGINS = ['http://127.0.0.1:8000', 'http://localhost:8000']
 # Application definition
 
 INSTALLED_APPS = [
+    'daphne', # for channels4.0 & above
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
-    'django.contrib.admin',
+    'django.contrib.admin', #default Django app
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',

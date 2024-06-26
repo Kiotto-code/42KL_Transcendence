@@ -16,7 +16,7 @@ class ChatConsumer(WebsocketConsumer):
     def websocket_receive(self, message):
         print(message)
         self.send("收到了，老弟")
-        #self.close() # This is if server side want to disconnect the client (挥手）)
+        #self.close()  #-> 自动断开This is if server side want to disconnect the client (挥手）)
 
     def websocket_disconnect(self, message):
         print("websocket_disconnect 被断链接了") # This is printed on the server side when the client disconnects

@@ -1185,6 +1185,15 @@ a {
   font-weight: 1.4rem;
 }
 
+.message {
+  margin: 20px 20px;
+  height: 250px;
+  border: 1px solid #601616;
+  width: 50%;
+  overflow: scroll;
+  scrollbar-gutter: auto;
+}
+
 .notification {
   color: white;
   text-decoration: none;

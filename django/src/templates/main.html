@@ -31,6 +31,14 @@
     
     
     {% endblock %}
+    <div class="message">
+    </div>
+    <div>
+      <input type="text" placeholder="enter check1" id="txt" onKeyPress=handleMessage(event)>
+      <input type="button" value="send check2" onclick="sendMessage()" >
+      <input type="button" value="disconnect check3" onclick="closeConnect()" >
+    </div>
+
     <script src="{% static 'bootstrap/js/bootstrap.min.js' %}"></script>
     <script src="{% static 'js/script.js' %}"></script>
     <script src="{% static 'js/spa/ajax.js' %}"></script>

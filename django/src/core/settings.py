@@ -49,6 +49,7 @@ INSTALLED_APPS = [
     'channels',
     'base',
     'provider',
+    'app01.apps.App01Config',
 ]
 
 MIDDLEWARE = [

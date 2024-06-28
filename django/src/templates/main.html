@@ -31,7 +31,8 @@
     
     
     {% endblock %}
-    <div class="message">
+    <div class="message" id="message-container" content="This is where the zoomer cyberbully each other">
+      
     </div>
     <div>
       <input type="text" placeholder="enter check1" id="txt" onKeyPress=handleMessage(event)>
@@ -42,6 +43,8 @@
     <script src="{% static 'bootstrap/js/bootstrap.min.js' %}"></script>
     <script src="{% static 'js/script.js' %}"></script>
     <script src="{% static 'js/spa/ajax.js' %}"></script>
+    <script src="{% static 'js/app01/chat.js' %}"></script>
+    <script>var nickname = "{{ request.user.profile.nickname }}";</script>
   </body>
 </html>
 

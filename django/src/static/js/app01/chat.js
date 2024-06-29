@@ -17,8 +17,26 @@ const socketURL = `${protocol}//${host}:${port}/room/123/`;
 
 // Create a WebSocket connection
 const socket = new WebSocket(socketURL);
+
+// const tmp = `${protocol}//${host}:${port}/room/123/`;
+// const tmp = `${protocol}//${window.location.host}/room/123/`;
+// const socket = new WebSocket(tmp);
+
 // socket = new WebSocket("ws://127.0.0.1:8000/room/123/");
 
+const styles = {
+    default: 'color: black;', // Default style
+    warning: 'color: orange; font-weight: bold;', // Warning style
+    error: 'color: red; font-weight: bold;' // Error style
+};
+
+function logMessage(message, style = 'default') {
+    console.log(`%c${message}`, styles[style]);
+}
+
+function logMessage(message, style = 'default') {
+    console.log(`%c${message}`, styles[style]);
+}
 
 socket.onopen = function(e){
     console.log("连接成功");
@@ -34,45 +52,29 @@ socket.onmessage = function(e){
     let message = document.createElement("div");
     message.innerText = e.data;
     document.querySelector(".message").appendChild(message);
-}
-// socket.onmessage = function(e){
-// 	console.log(e.data);
-// }
+} // e.data是服务器发送过来的消息
 
 socket.onclose = function(e){
-    console.log("连接关闭");
+
+    logMessage(nickname + '连接已断开', 'error');
     let tag = document.createElement("div");
     tag.innerText = "连接关闭";
+    tag.append("\t你没朋友了 ｡ﾟ･ (>﹏<) ･ﾟ｡ ");
+    tag.style.color = "red";
     document.querySelector(".message").appendChild(tag);
 }
 
 function sendMessage(){
     let message = document.getElementById("txt");
 
-    socket.send(nickname +  " :" + message.value);
-    // let messageToSend = `${request.user.id}: ${message.value}`;
-    // socket.send(messageToSend);
-
-}
-
-// function sendMessage() {
-//     let messageInput = document.getElementById("txt");
-//     let message = messageInput.value.trim();
-
-//     if (message) {
-//         // Construct the message to send
-//         let messageToSend = `${request.user.id}: ${message}`;
-        
-//         // Send the constructed message to the server
-//         socket.send(messageToSend.value);
-
-//         // Clear the input field after sending
-//         messageInput.value = '';
-//     }
-//     else
-//         socket.send(messageInput.value);
-
-// }
+    // message.value only spaces
+    if (message.value.trim() == ""){
+        ;
+    }
+    else
+        socket.send(nickname +  " :" + message.value);
+    message.value = "";
+} //向服务器发送消息
 
 function scrollToBottom() {
     var messageContainer = document.getElementById('message-container');

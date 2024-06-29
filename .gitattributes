@@ -13,3 +13,15 @@
 *.png binary
 *.jpg binary
 *.gif binary
+
+# # Set specific handling for files in a directory
+# docs/*.txt text eol=lf
+
+# Specify merge strategy for specific files
+*.docx merge=word
+
+# Ignore whitespace differences in certain files
+*.css diff=css
+
+# Set custom attributes for specific files
+special_file.txt -text merge=binary

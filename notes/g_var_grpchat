@@ -42,7 +42,7 @@ class ChatConsumer(WebsocketConsumer):
         if content == "":
             return
         print("姐收到self", self)
-        # print("姐收到text", self.text)
+        print("姐收到text", self.text)
            
         # res = f"服务器返回 ->{text}"
         
@@ -52,4 +52,11 @@ class ChatConsumer(WebsocketConsumer):
         print("websocket_disconnect 被断链接了") # This is printed on the server side when the client disconnects
         CONST_LIST.remove(self)
         raise StopConsumer()# Stop socket conenction
+ 
+ 
+ 
+ 
+#  Or next i would should async chat
+#  click the following if you want to know more about the code:
+ https://blog.csdn.net/Rocky006/article/details/134416407
  

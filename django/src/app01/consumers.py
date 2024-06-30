@@ -1,11 +1,10 @@
 from channels.generic.websocket import WebsocketConsumer
 from channels.exceptions import StopConsumer
+# from color_class import TerminalColors
 
 import re
 
-
 CONST_LIST = []
-
 
 # ChatConsumer inherits from WebsocketConsumer. Also known as Polymorphism.
 # It is called by the routing.py file (routing.websocket_urlpatterns)
@@ -21,6 +20,8 @@ class ChatConsumer(WebsocketConsumer):
 
         
     def websocket_receive(self, message):
+        if self not in CONST_LIST:
+            CONST_LIST.append(self)
         text = message['text']
         
         pattern = r'^(\w+ ):(.*)$'
@@ -49,7 +50,7 @@ class ChatConsumer(WebsocketConsumer):
         # self.send(res)
 
     def websocket_disconnect(self, message):
-        print("websocket_disconnect 被断链接了") # This is printed on the server side when the client disconnects
+        print("\033[91mwebsocket_disconnect 被断链接了\033[0m")
         CONST_LIST.remove(self)
         raise StopConsumer()# Stop socket conenction
  

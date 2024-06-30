@@ -35,9 +35,10 @@
       
     </div>
     <div>
-      <input type="text" placeholder="enter check1" id="txt" onKeyPress=handleMessage(event)>
-      <input type="button" value="send check2" onclick="sendMessage()" >
-      <input type="button" value="disconnect check3" onclick="closeConnect()" >
+      <input type="text" name="message_input" placeholder="enter" id="txt" onKeyPress=handleMessage(event)>
+      <input type="button" name="button" value="send" onclick="sendMessage()" >
+      <input type="button" name="button" value="disconnect" onclick="closeConnect()" >
+      <input type="button" name="button" value="reconnect" onclick="openConnect()" >
     </div>
 
     <script src="{% static 'bootstrap/js/bootstrap.min.js' %}"></script>

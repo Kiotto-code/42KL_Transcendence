@@ -37,6 +37,10 @@ function socket_state(socket){
 let socket = null;
 
 function newSocket(){
+    // let protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+    // let socketURL = `${protocol}//${window.location.host}/room/123/`;
+
+    // Determine the current host and protocol
     const host = window.location.hostname;
     const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
 
@@ -44,15 +48,12 @@ function newSocket(){
     const port = window.location.port || (protocol === 'wss:' ? '443' : '80');
     const socketURL = `${protocol}//${host}:${port}/room/123/`;
 
-    // Create a WebSocket connection
-    socket = new WebSocket(socketURL);
-
     // Close existing socket if it's open
     if (socket !== null && socket.readyState === WebSocket.OPEN) {
         socket.close();
     }
 
-    socket = new WebSocket(tmp);
+    socket = new WebSocket(socketURL);
 
     socket.onopen = function(e){
         console.log("连接成功");

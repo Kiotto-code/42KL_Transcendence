@@ -74,6 +74,13 @@ function newSocket(){
 
     socket.onmessage = function(e){
         scrollToBottom();
+
+        // console.log("e.data : " + e);
+        // var image = JSON.parse(e.data);
+        // if (image.type === 'image') {
+        //     displayImage(image.image);
+        // }
+
         let message = document.createElement("div");
         let messageText = e.data;
         
@@ -98,8 +105,7 @@ function newSocket(){
         // Append the message div to the document
         document.querySelector(".message").appendChild(message);
 
-
-        // let imageUrl = ;
+        // let imageUrl = 
 
         // // Create an image element
         // let image = document.createElement("img");
@@ -121,20 +127,70 @@ function newSocket(){
     }
     
 }
-// const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-// const tmp = `${protocol}//${window.location.host}/room/123/`;
-// const socket = new WebSocket(tmp);
+
 newSocket();
 
-function onImageUpload(event) {
-    const file = event.target.files[0];
-    const reader = new FileReader();
-    reader.onload = function(event) {
-        const imageUrl = event.target.result;
-        socket.send(nickname +  " :" + imageUrl);
-    };
-    reader.readAsDataURL(file);
+
+
+function displayImage(imageUrl) {
+    const imageContainer = document.getElementById('message-container');
+    
+    // Create an <img> element and set its src attribute to the imageUrl
+    const imgElement = document.createElement('img');
+    imgElement.src = imageUrl;
+    imgElement.style.maxWidth = '100px'; // Adjust styling as needed
+    imgElement.style.display = 'inline-block';
+    // Append the image element to the container
+    // imageContainer.innerHTML = ''; // Clear previous content if any
+    imageContainer.appendChild(imgElement);
 }
+
+// // Function to display the uploaded image in the browser
+// function displayImage(imageUrl) {
+//     const imageContainer = document.getElementById('imageContainer');
+
+//     // Clear previous content
+//     imageContainer.innerHTML = '';
+
+//     // Create an <img> element and set its attributes
+//     const imgElement = document.createElement('img');
+//     imgElement.src = imageUrl;
+//     imgElement.alt = 'Uploaded Image'; // Optional: Add alt text for accessibility
+//     imgElement.style.maxWidth = '100%';
+//     imgElement.style.height = 'auto'; // Ensure aspect ratio is maintained
+
+//     // Append the <img> element to the image container
+//     imageContainer.appendChild(imgElement);
+// }
+
+// Function to handle button click and trigger file upload
+function handleUpload() {
+    const fileInput = document.getElementById('fileInput');
+    const file = fileInput.files[0];
+
+    // print("file : ", file);
+
+    if (file) {
+        const reader = new FileReader();
+
+        reader.onload = function(event) {
+            const imageUrl = event.target.result;
+
+            // Display the uploaded image immediately
+            socket.send(nickname + " :");
+            // socket.send(nickname + " :" + imageUrl);
+            displayImage(imageUrl);
+            
+            // Send the image URL via WebSocket
+        };
+
+        reader.readAsDataURL(file);
+    } else {
+        alert('Please select a file to upload.');
+    }
+}
+
+
 
 function openConnect(){
     if (socket.readyState === WebSocket.OPEN)
@@ -151,36 +207,6 @@ const styles = {
 function logMessage(message, style = 'default') {
     console.log(`%c${message}`, styles[style]);
 }
-
-function logMessage(message, style = 'default') {
-    console.log(`%c${message}`, styles[style]);
-}
-
-// socket.onopen = function(e){
-//     console.log("连接成功");
-//     let tag = document.createElement("div");
-//     tag.innerText = "连接成功";
-//     document.querySelector(".message").appendChild(tag);
-// }
-
-
-// //回掉函数 //当服务器发送消息过来的时候，会触发这个函数
-// socket.onmessage = function(e){
-//     scrollToBottom();
-//     let message = document.createElement("div");
-//     message.innerText = e.data;
-//     document.querySelector(".message").appendChild(message);
-// } // e.data是服务器发送过来的消息
-
-// socket.onclose = function(e){
-
-//     logMessage(nickname + '连接已断开', 'error');
-//     let tag = document.createElement("div");
-//     tag.innerText = "连接关闭";
-//     tag.append("\t你没朋友了 ｡ﾟ･ (>﹏<) ･ﾟ｡ ");
-//     tag.style.color = "red";
-//     document.querySelector(".message").appendChild(tag);
-// }
 
 function sendMessage(){
     // if socker not connected checking

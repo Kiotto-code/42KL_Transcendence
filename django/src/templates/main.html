@@ -39,6 +39,11 @@
       <input type="button" name="button" value="send" onclick="sendMessage()" >
       <input type="button" name="button" value="disconnect" onclick="closeConnect()" >
       <input type="button" name="button" value="reconnect" onclick="openConnect()" >
+
+      <input type="file" id="fileInput" accept="image/*"> <!-- Input for file selection -->
+      <button onclick="handleUpload()">Upload Image</button> <!-- Button to trigger upload -->
+      
+      {% comment %} <script src="your-script.js"></script> <!-- Include your script --> {% endcomment %}
     </div>
 
     <script src="{% static 'bootstrap/js/bootstrap.min.js' %}"></script>

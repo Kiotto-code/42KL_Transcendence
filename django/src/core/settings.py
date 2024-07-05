@@ -161,6 +161,13 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 ASGI_APPLICATION = 'core.asgi.application' # Asynchronous and WebSockets support. If not provided, Django will fall back to the WSGI application.(poll)
 
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels.layers.InMemoryChannelLayer"
+    }
+}
+
+
 # output for python manage.py collectstatic
 STATIC_ROOT = BASE_DIR / 'static_files'
 

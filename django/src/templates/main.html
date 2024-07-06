@@ -43,14 +43,13 @@
       <input type="file" id="fileInput" accept="image/*"> <!-- Input for file selection -->
       <button onclick="handleUpload()">Upload Image</button> <!-- Button to trigger upload -->
       
-      {% comment %} <script src="your-script.js"></script> <!-- Include your script --> {% endcomment %}
     </div>
 
     <script src="{% static 'bootstrap/js/bootstrap.min.js' %}"></script>
     <script src="{% static 'js/script.js' %}"></script>
     <script src="{% static 'js/spa/ajax.js' %}"></script>
-    <script src="{% static 'js/app01/chat.js' %}"></script>
     <script>var nickname = "{{ request.user.profile.nickname }}";</script>
+    <script src="{% static 'js/app01/chat.js' %}"></script>
   </body>
 </html>
 

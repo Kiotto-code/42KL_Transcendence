@@ -324,6 +324,10 @@ function newSocket() {
             displayImage(data.image, data.name);
             // displayImageMessage(data.image);
         }
+        else {
+            displayChatMessage(data.message);
+        }
+
         scrollToBottom();
     };
 
@@ -400,6 +404,12 @@ function newSocket() {
     };
 }
 
+function openConnect(){
+    if (socket.readyState === WebSocket.OPEN)
+        return;
+    newSocket(); //重新连接
+}
+
 // Initial connection
 newSocket();
 
@@ -458,12 +468,13 @@ function sendMessage() {
             socket.send(JSON.stringify({
                 'type': 'message',
                 'name': nickname,
-                'message': nickname + " : " + message
+                'message': message
             }));
             document.getElementById("txt").value = "";
         }
     } else {
         socket_state(socket); // Handle socket state if necessary
+        openConnect(); // Reconnect if the WebSocket connection is closed
     }
 }
 
@@ -507,31 +518,72 @@ function handleMessage(event) {
 }
 
 function displayChatMessage(data) {
-        let message = document.createElement("div");
-        let messageText = data.trim()
+    let message = document.createElement("div");
+    let messageText = data.trim();
 
-        // let messageText = event.data
-        
-        // Split the message by the part you want to style differently
-        let parts = messageText.split(":");
-        
-        // Create a wrapper for the first part (assuming it's before the colon)
+    // Regular expression to split the message by the first colon
+    let regex = /^([^:]*):(.*)$/;
+    let match = regex.exec(messageText);
+
+    if (match) {
+        // Create a wrapper for the first part (before the colon)
         let textBeforeColon = document.createElement("span");
-        textBeforeColon.textContent = parts[0];
-        // textBeforeColon.textContent = encodeURIComponent(nickname);
+        textBeforeColon.textContent = match[1].trim();
         textBeforeColon.style.color = "blue"; // Example: change color to blue
-        
-        // Create a wrapper for the second part (assuming it's after the colon)
+
+        // Create a wrapper for the second part (after the colon)
         let textAfterColon = document.createElement("span");
-        textAfterColon.textContent = parts.slice(1);
-        
+        textAfterColon.textContent = match[2].trim();
+
         // Append both parts to the message div
         message.appendChild(textBeforeColon);
-        message.appendChild(textAfterColon).prepend(": ");
-        
-        // Append the message div to the document
-        document.querySelector(".message").appendChild(message);
+        message.appendChild(document.createTextNode(": ")); // Add colon separator
+        message.appendChild(textAfterColon);
+    } else {
+        // Handle case where no colon is found (or unexpected format)
+        let textNode = document.createTextNode(messageText);
+        message.appendChild(textNode);
+    }
 
-        // scrollToBottom();
+    // Append the message div to the document
+    document.querySelector(".message").appendChild(message);
 
+    // Optionally, scroll to the bottom of the chat container
+    // scrollToBottom();
 }
+
+
+// function displayChatMessage(data) {
+//         let message = document.createElement("div");
+//         let messageText = data.trim()
+
+//         // let messageText = event.data
+        
+//         // Split the message by the part you want to style differently
+//         let parts = messageText.split(':');
+    
+//         // Create a wrapper for the first part (assuming it's before the colon)
+//         let textBeforeColon = document.createElement("span");
+//         textBeforeColon.textContent = parts[0];
+//         // textBeforeColon.textContent = encodeURIComponent(nickname);
+//         textBeforeColon.style.color = "blue"; // Example: change color to blue
+        
+//         // Create a wrapper for the second part (assuming it's after the colon)
+//         let textAfterColon = document.createElement("span");
+//         textAfterColon.textContent = parts.slice(1).join(':');
+        
+//         // Append both parts to the message div
+//         message.appendChild(textBeforeColon);
+//         message.appendChild(textAfterColon).prepend(": ");
+        
+//         // Append the message div to the document
+//         document.querySelector(".message").appendChild(message);
+
+//         // scrollToBottom();
+
+// }
+
+function closeConnect(){
+    socket.close(); //关闭连接 //向服务器发送断开连接的请求
+}
+

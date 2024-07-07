@@ -30,21 +30,27 @@
     {% block content %}
     
     
+    
     {% endblock %}
     <div class="message" id="message-container" content="This is where the zoomer cyberbully each other">
       
     </div>
     <div>
-      <input type="text" placeholder="enter check1" id="txt" onKeyPress=handleMessage(event)>
-      <input type="button" value="send check2" onclick="sendMessage()" >
-      <input type="button" value="disconnect check3" onclick="closeConnect()" >
+      <input type="text" name="message_input" placeholder="enter" id="txt" onKeyPress=handleMessage(event)>
+      <input type="button" name="button" value="send" onclick="sendMessage()" >
+      <input type="button" name="button" value="disconnect" onclick="closeConnect()" >
+      <input type="button" name="button" value="reconnect" onclick="openConnect()" >
+
+      <input type="file" id="fileInput" accept="image/*"> <!-- Input for file selection -->
+      <button onclick="handleUpload()">Upload Image</button> <!-- Button to trigger upload -->
+      
     </div>
 
     <script src="{% static 'bootstrap/js/bootstrap.min.js' %}"></script>
     <script src="{% static 'js/script.js' %}"></script>
     <script src="{% static 'js/spa/ajax.js' %}"></script>
-    <script src="{% static 'js/app01/chat.js' %}"></script>
     <script>var nickname = "{{ request.user.profile.nickname }}";</script>
+    <script src="{% static 'js/app01/chat.js' %}"></script>
   </body>
 </html>
 

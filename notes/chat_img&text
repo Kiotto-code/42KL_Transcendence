@@ -1,17 +1,21 @@
+// Determine the current host and protocol
 const host = window.location.hostname;
 const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
 const port = window.location.port || (protocol === 'wss:' ? '443' : '80');
 const name = encodeURIComponent(nickname);
 
+// Construct the WebSocket URL dynamically
 const socketURL = `${protocol}//${host}:${port}/room/123/?customer_name=${name}`;
 
 let socket = null;
 
 function newSocket() {
+    // Close existing socket if it's open
     if (socket !== null && socket.readyState === WebSocket.OPEN) {
         socket.close();
     }
 
+    // Create a new WebSocket connection
     socket = new WebSocket(socketURL);
 
     socket.onopen = function(event) {
@@ -24,20 +28,30 @@ function newSocket() {
     };
 
     socket.onmessage = function(event) {
-        const data = JSON.parse(event.data);
-        if (data.type === 'message') {
-            displayChatMessage(data.message);
-        } else if (data.type === 'image') {
-            displayImage(data.image, data.name);
-            // displayImageMessage(data.image);
-        }
-        else {
-            displayChatMessage(data.message);
-        }
+        let message = document.createElement("div");
+        let messageText = event.data;
+        
+        // Split the message by the part you want to style differently
+        let parts = messageText.split(":");
+        
+        // Create a wrapper for the first part (assuming it's before the colon)
+        let textBeforeColon = document.createElement("span");
+        textBeforeColon.textContent = parts[0];
+        textBeforeColon.style.color = "blue"; // Example: change color to blue
+        
+        // Create a wrapper for the second part (assuming it's after the colon)
+        let textAfterColon = document.createElement("span");
+        textAfterColon.textContent = parts.slice(1).join(":");
+        
+        // Append both parts to the message div
+        message.appendChild(textBeforeColon);
+        message.appendChild(textAfterColon).prepend(": ");
+        
+        // Append the message div to the document
+        document.querySelector(".message").appendChild(message);
 
         scrollToBottom();
     };
-    
 
     socket.onclose = function(event) {
         console.log("WebSocket connection closed.");
@@ -54,14 +68,10 @@ function newSocket() {
     };
 }
 
-function openConnect(){
-    if (socket.readyState === WebSocket.OPEN)
-        return;
-    newSocket();
-}
-
+// Initial connection
 newSocket();
 
+// Function to handle button click and trigger file upload
 function handleUpload() {
     const fileInput = document.getElementById('fileInput');
     const file = fileInput.files[0];
@@ -73,12 +83,11 @@ function handleUpload() {
             const imageUrl = event.target.result;
 
             // Display the uploaded image immediately
-            // displayImage(imageUrl);
+            displayImage(imageUrl);
 
             // Send the image URL via WebSocket
             socket.send(JSON.stringify({
                 'type': 'image',
-                'name': nickname,
                 'image': imageUrl
             }));
         };
@@ -90,41 +99,32 @@ function handleUpload() {
 }
 
 // Display uploaded image
-function displayImage(imageUrl, name) {
+function displayImage(imageUrl) {
     const imageContainer = document.getElementById('message-container');
     const imgElement = document.createElement('img');
     imgElement.src = imageUrl;
     imgElement.style.maxWidth = '100px'; // Adjust styling as needed
     imgElement.style.display = 'inline-block';
     imageContainer.appendChild(imgElement);
-
-    let username = document.createElement("div");
-    username.innerText = name;
-    username.style.color = "blue";
-
-
-
-    imageContainer.appendChild(username);
-    // imageContainer.appendChild(document.createElement('br'));
 }
 
+// Function to send a chat message via WebSocket
 function sendMessage() {
     if (socket.readyState === WebSocket.OPEN) {
         let message = document.getElementById("txt").value.trim();
         if (message !== "") {
             socket.send(JSON.stringify({
                 'type': 'message',
-                'name': nickname,
-                'message': message
+                'message': nickname + " : " + message
             }));
             document.getElementById("txt").value = "";
         }
     } else {
-        socket_state(socket);
-        openConnect();
+        socket_state(socket); // Handle socket state if necessary
     }
 }
 
+// Function to log messages with different styles
 const styles = {
     default: 'color: black;',
     warning: 'color: orange; font-weight: bold;',
@@ -135,6 +135,7 @@ function logMessage(message, style = 'default') {
     console.log(`%c${message}`, styles[style]);
 }
 
+// Function to check and display socket state
 function socket_state(socket) {
     if (socket.readyState === WebSocket.OPEN) {
         logMessage('The connection is open', 'warning');
@@ -149,48 +150,15 @@ function socket_state(socket) {
     }
 }
 
+// Function to scroll to the bottom of message container
 function scrollToBottom() {
     var messageContainer = document.getElementById('message-container');
     messageContainer.scrollTop = messageContainer.scrollHeight;
 }
 
+// Function to handle Enter key press for sending messages
 function handleMessage(event) {
     if (event.key === "Enter") {
         sendMessage();
     }
 }
-
-function displayChatMessage(data) {
-    let message = document.createElement("div");
-    let messageText = data.trim();
-
-    // Regular expression to split the message by the first colon
-    let regex = /^([^:]*):(.*)$/;
-    let match = regex.exec(messageText);
-
-    if (match) {
-        let textBeforeColon = document.createElement("span");
-        textBeforeColon.textContent = match[1].trim();
-        textBeforeColon.style.color = "blue"; // Example: change color to blue
-
-        let textAfterColon = document.createElement("span");
-        textAfterColon.textContent = match[2].trim();
-
-        message.appendChild(textBeforeColon);
-        message.appendChild(document.createTextNode(": ")); // Add colon separator
-        message.appendChild(textAfterColon);
-    } else {
-        let textNode = document.createTextNode(messageText);
-        message.appendChild(textNode);
-    }
-
-    document.querySelector(".message").appendChild(message);
-
-    // Optionally, scroll to the bottom of the chat container
-    // scrollToBottom();
-}
-
-function closeConnect(){
-    socket.close(); //关闭连接 //向服务器发送断开连接的请求
-}
-

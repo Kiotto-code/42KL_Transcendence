@@ -61,9 +61,9 @@ class ChatConsumer(WebsocketConsumer):
                 response = '/static/images/meme/9299765.jpg'
                 self.send_image_message(response)
             elif is_online_image_url(text_data['message']):
-                return # Do nothing
-                # response = text_data['message']
-                # self.send_image_message(response)
+                # return # Do nothing
+                response = text_data['message']
+                self.send_image_message(response)
             else:
                 text_data['message'] = text_data['name'] + ": " + text_data['message']
                 self.send_chat_message(text_data['message'])

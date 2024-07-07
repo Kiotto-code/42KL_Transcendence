@@ -96,10 +96,14 @@ function displayImage(imageUrl, name) {
     imgElement.src = imageUrl;
     imgElement.style.maxWidth = '100px'; // Adjust styling as needed
     imgElement.style.display = 'inline-block';
-    imageContainer.appendChild(imgElement);
+    
+    imgElement.onload = function() {
+        imageContainer.appendChild(imgElement);
+        scrollToBottom();
+    };
 
     let username = document.createElement("div");
-    username.innerText = name;
+    username.innerText = name + " : ";
     username.style.color = "blue";
 
 

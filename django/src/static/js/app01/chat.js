@@ -12,8 +12,11 @@ function newSocket() {
         socket.close();
     }
 
+    // Create a new WebSocket connection
     socket = new WebSocket(socketURL);
 
+    socket.onopen = function(event) {
+        console.log("WebSocket connection opened.");
     socket.onopen = function(event) {
         console.log("WebSocket connection opened.");
         let tag = document.createElement("div");
@@ -47,6 +50,10 @@ function newSocket() {
         tag.append("\t你没朋友了 ｡ﾟ･ (>﹏<) ･ﾟ｡ ");
         tag.style.color = "red";
         document.querySelector(".message").appendChild(tag);
+    };
+
+    socket.onerror = function(error) {
+        console.error("WebSocket error:", error);
     };
 
     socket.onerror = function(error) {
@@ -126,6 +133,9 @@ function sendMessage() {
 }
 
 const styles = {
+    default: 'color: black;',
+    warning: 'color: orange; font-weight: bold;',
+    error: 'color: red; font-weight: bold;'
     default: 'color: black;',
     warning: 'color: orange; font-weight: bold;',
     error: 'color: red; font-weight: bold;'

@@ -37,11 +37,9 @@ CSRF_TRUSTED_ORIGINS = ['http://127.0.0.1:8000', 'http://localhost:8000']
 
 INSTALLED_APPS = [
     'daphne', # for channels4.0 & above
-    'daphne', # for channels4.0 & above
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
-    'django.contrib.admin', #default Django app
     'django.contrib.admin', #default Django app
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -49,10 +47,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'channels',
-    'channels',
     'base',
     'provider',
-    'app01.apps.App01Config',
     'app01.apps.App01Config',
 ]
 

@@ -1186,7 +1186,8 @@ a {
 }
 
 .message {
-  margin: 20px 20px;
+  margin: auto;
+  /* text-align:center; */
   height: 250px;
   border: 1px solid #601616;
   width: 50%;

@@ -1,0 +1,32 @@
+{% comment %} {% extends 'main.html' %} {% endcomment %}
+
+{% comment %} {% block chat %} {% endcomment %}
+
+<main class="update-account layout">
+  
+  
+  {% if request.user.is_authenticated %}
+  <div class="message" id="message-container" content="This is where the zoomer cyberbully each other">
+        
+  </div>
+  <div style="margin: 0 auto; width: 900px;"">
+    
+    <input type="text" name="message_input" placeholder="enter" id="txt" onKeyPress=handleMessage(event)>
+    <input type="button" name="button" value="send" onclick="sendMessage()" >
+    <input type="button" name="button" value="disconnect" onclick="closeConnect()" >
+    <input type="button" name="button" value="reconnect" onclick="openConnect()" >
+
+    <input type="file" id="fileInput" accept="image/*"> <!-- Input for file selection -->
+    <button onclick="handleUpload()">Upload Image</button> <!-- Button to trigger upload -->
+    
+    <!-- <script src="js/app01/chat.js"></script> Include your script -->
+  </div>
+  {% else %}
+  <p>You Haven't logged in for Chat !</p>
+  {% endif %}
+
+</main>
+
+
+
+{% comment %} {% endblock %} {% endcomment %}

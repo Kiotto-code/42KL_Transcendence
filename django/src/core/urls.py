@@ -18,14 +18,16 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
-from app01 import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('allauth.urls')),
     path('', include('base.urls')),
-    # path('', include('app01.urls')),
-    path('home/', views.home),
+    path('', include('app01.urls')),
+    # path('home/', views.home), #this one useless
+    # path('', views.chat),
+    # path('chat/', views.chat),
+    # path('chat/', views.chat),
 
 ]
 

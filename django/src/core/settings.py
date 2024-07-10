@@ -36,6 +36,7 @@ CSRF_TRUSTED_ORIGINS = ['http://127.0.0.1:8000', 'http://localhost:8000']
 # Application definition
 
 INSTALLED_APPS = [
+    'app01',
     'daphne', # for channels4.0 & above
     'allauth',
     'allauth.account',
@@ -49,7 +50,6 @@ INSTALLED_APPS = [
     'channels',
     'base',
     'provider',
-    'app01.apps.App01Config',
 ]
 
 MIDDLEWARE = [
@@ -68,7 +68,8 @@ ROOT_URLCONF = 'core.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR / 'templates'],
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],
+        # 'DIRS': [],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -153,13 +154,20 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 
-STATIC_URL = '/static/'
+STATIC_URL = 'static/'
 
-MEDIA_URL = '/media/'
+MEDIA_URL = 'media/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 ASGI_APPLICATION = 'core.asgi.application' # Asynchronous and WebSockets support. If not provided, Django will fall back to the WSGI application.(poll)
+
+
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels.layers.InMemoryChannelLayer"
+    }
+}
 
 # output for python manage.py collectstatic
 STATIC_ROOT = BASE_DIR / 'static_files'

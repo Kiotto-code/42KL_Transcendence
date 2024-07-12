@@ -173,6 +173,7 @@ CHANNEL_LAYERS = {
 STATIC_ROOT = BASE_DIR / 'static_files'
 
 #source(s) for python manage.py collectstatic
+#source(s) for python manage.py collectstatic
 STATICFILES_DIRS = [
     BASE_DIR / 'static',
 ]

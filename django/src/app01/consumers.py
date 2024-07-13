@@ -19,8 +19,6 @@ def is_online_image_url(url):
     # Regular expression to match common image file extensions
     image_extensions = ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'svg', 'webp']
     pattern2 = r'^(?:data:image/(?:png|jpeg|gif|webp);base64,)'
-    # pattern2 = r'^(?:data:image/(?:png|jpeg|gif|webp))'
-    # pattern = r'^.*\.(jpg|jpeg|png|gif)$'
     pattern1 = r'^https?://.*\.(' + '|'.join(image_extensions) + r')'
     pattern3 = r'^https?://images.*\.(' + '|'+ r')'
 
@@ -65,16 +63,10 @@ class ChatConsumer(WebsocketConsumer):
         if text_data['type'] == 'message':
             if " shabi " in text_data['message'] or "傻逼" in text_data['message']:
                 text_data['message'] = f"服务器:【{self.customer_name}】你才是傻逼 "
-                # self.send(f"服务器:【{self.customer_name}】你才是傻逼 ")
                 self.send(text_data['message'])
-
-            # elif text_data['message'] == ':dog':
-            #     response = '/static/images/meme/9299765.jpg'
-            #     self.send_image_message(response)
             elif self.check_if_static_image(text_data):
                 return
             elif is_online_image_url(text_data['message']):
-                # return # Do nothing
                 response = text_data['message']
                 self.send_image_message(response)
             else:

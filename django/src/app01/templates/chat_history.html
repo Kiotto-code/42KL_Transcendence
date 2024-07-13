@@ -1,0 +1,12 @@
+{% extends "main.html" %}
+
+{% block content %}
+  <h2>Chat history with {{ receiver.username }}</h2>
+  <ul>
+    {% for message in messages %}
+      <li>
+        <strong>{{ message.sender.username }}</strong> ({{ message.timestamp }}): {{ message.message }}
+      </li>
+    {% endfor %}
+  </ul>
+{% endblock %}

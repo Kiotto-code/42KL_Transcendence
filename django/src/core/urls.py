@@ -18,13 +18,27 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
+from app01 import views as app01_views
+from base import views as base_views
 
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('allauth.urls')),
     path('', include('base.urls')),
-    # path('', include('app01.urls')),
+    path('', include('app01.urls')),
+    
+    # # base_views
+    # path('', base_views.home, name='home'),
+    # path("update_profile/", base_views.profileUpdateView, name="update_profile"),
+    # path("settings/", base_views.settings, name="settings"),
+    # path('profile/<str:pk>', base_views.userProfile, name='user_profile'),
+    
+    # # app01_views
+    # path('chat/', app01_views.chat, name='chat'),
+    # path('send_message/<int:receiver_id>/', app01_views.send_message, name='send_message'),
+    # path('chat_history/<int:receiver_id>/', app01_views.chat_history, name='chat_history'),
+
     # path('home/', views.home), #this one useless
     # path('', views.chat),
     # path('chat/', views.chat),

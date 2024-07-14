@@ -8,10 +8,11 @@ from django.contrib.auth.decorators import login_required
 
 
 # Create your views here.
-@login_required
 def chat(request):
     return render(request, 'chat.html')
 
+def friendchat(request):
+    return render(request, 'friend_chat.html')
 
 @login_required
 def send_message(request, receiver_id):

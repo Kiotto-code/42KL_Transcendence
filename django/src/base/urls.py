@@ -11,7 +11,7 @@ urlpatterns = [
     path('profile/<str:pk>', views.userProfile, name='user_profile'),
     
     # app01_views
-    path('chat/', app01_views.chat, name='chat'),
-    path('send_message/<int:receiver_id>/', app01_views.send_message, name='send_message'),
-    path('chat_history/<int:receiver_id>/', app01_views.chat_history, name='chat_history'),
+    # path('', app01_views.chat, name='chat'),
+    # path('send_message/<int:receiver_id>/', app01_views.send_message, name='send_message'),
+    # path('chat_history/<int:receiver_id>/', app01_views.chat_history, name='chat_history'),
 ]

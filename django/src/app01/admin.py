@@ -2,5 +2,6 @@
 from django.contrib import admin
 from .models import Friendship, ChatMessage
 
+
 admin.site.register(Friendship)
 admin.site.register(ChatMessage)

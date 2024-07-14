@@ -20,7 +20,11 @@ function newSocket() {
         tag.innerText = "连接成功";
         tag.style.color = "green";
         tag.append("\t你有朋友了 (｡♥‿♥｡) ");
-        document.querySelector(".message").appendChild(tag);
+        // document.querySelector(".message").appendChild(tag);
+        message_sect = document.querySelector(".message")
+        if (message_sect) {
+            message_sect.appendChild(tag);
+        }
     };
 
     socket.onmessage = function(event) {
@@ -45,7 +49,10 @@ function newSocket() {
         tag.innerText = "连接关闭";
         tag.append("\t你没朋友了 ｡ﾟ･ (>﹏<) ･ﾟ｡ ");
         tag.style.color = "red";
-        document.querySelector(".message").appendChild(tag);
+        message_sect = document.querySelector(".message")
+        if (message_sect.hasChildNodes()) {
+            message_sect.appendChild(tag);
+        }
     };
 
     socket.onerror = function(error) {

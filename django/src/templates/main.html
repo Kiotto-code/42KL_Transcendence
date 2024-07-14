@@ -3,7 +3,7 @@
 
 <html lang="en">
   <head>
-    <meta charset="UTF-8" />
+    <meta charset="UTF-8" >
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="shortcut icon" href="{% static 'images/favicon.ico' %}" type="image/x-icon" />
@@ -28,13 +28,22 @@
 
     <div id="root"></div>
 
-    {% block content %}
-    
-    
-    
-    {% endblock %}
+    <div>
+      {% block content %}
+      
+        <p>Content Block Default</p>
+        
+      {% endblock %}
+    </div>
+    <div>
+      {% block chat %}
+        {% include 'chat.html' %}
+        <p>Chat Block Default: include 'chat.html'</p>
+        {% comment %} {% include 'send_message.html' %}
+        {% include 'chat_history.html' %} {% endcomment %}
+      {% endblock %}
+    </div>
 
-    {% include 'chat.html' %}
 
     <script src="{% static 'bootstrap/js/bootstrap.min.js' %}"></script>
     <script type="module" src="{% static 'js/script.js' %}"></script>

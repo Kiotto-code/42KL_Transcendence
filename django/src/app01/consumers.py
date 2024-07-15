@@ -18,8 +18,8 @@ TABLE = {
 def is_online_image_url(url):
     # Regular expression to match common image file extensions
     image_extensions = ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'svg', 'webp']
-    pattern2 = r'^(?:data:image/(?:png|jpeg|gif|webp);base64,)'
     pattern1 = r'^https?://.*\.(' + '|'.join(image_extensions) + r')'
+    pattern2 = r'^(?:data:image/(?:png|jpeg|gif|webp);base64,)'
     pattern3 = r'^https?://images.*\.(' + '|'+ r')'
 
     combined_pattern = f"({pattern1})|({pattern3})|({pattern2}.*)"
@@ -45,6 +45,35 @@ class ChatConsumer(WebsocketConsumer):
             return True
         else:
             return False
+        
+    def websocket_receive(self, message):
+        try:
+            query_params = parse_qs(self.scope['query_string'].decode())
+            self.customer_name = query_params.get('customer_name', ['Anonymous'])[0]
+
+            text_data = json.loads(message['text'])
+
+            if text_data['type'] == 'message':
+                if " shabi " in text_data['message'] or "傻逼" in text_data['message']:
+                    text_data['message'] = f"服务器:【{self.customer_name}】你才是傻逼 "
+                    self.send(text_data['message'])
+                elif self.check_if_static_image(text_data):
+                    return
+                elif is_online_image_url(text_data['message']):
+                    response = text_data['message']
+                    self.send_image_message(response)
+                else:
+                    text_data['message'] = text_data['name'] + ": " + text_data['message']
+                    self.send_chat_message(text_data['message'])
+            elif text_data['type'] == 'image':
+                self.send_image_message(text_data['image'])
+
+        except json.JSONDecodeError as e:
+            error_message = {'type': 'error', 'message': 'Invalid JSON format in received message.'}
+            self.send(json.dumps(error_message))
+        except Exception as e:
+            error_message = {'type': 'error', 'message': str(e)}
+            self.send(json.dumps(error_message))
 
     def websocket_connect(self, message):
         self.accept()
@@ -54,26 +83,26 @@ class ChatConsumer(WebsocketConsumer):
             print("Channel Layer return None")
         
 
-    def websocket_receive(self, message):
-        query_params = parse_qs(self.scope['query_string'].decode())
-        self.customer_name = query_params.get('customer_name', ['Anonymous'])[0]
+    # def websocket_receive(self, message):
+    #     query_params = parse_qs(self.scope['query_string'].decode())
+    #     self.customer_name = query_params.get('customer_name', ['Anonymous'])[0]
 
-        text_data = json.loads(message['text'])
+    #     text_data = json.loads(message['text'])
 
-        if text_data['type'] == 'message':
-            if " shabi " in text_data['message'] or "傻逼" in text_data['message']:
-                text_data['message'] = f"服务器:【{self.customer_name}】你才是傻逼 "
-                self.send(text_data['message'])
-            elif self.check_if_static_image(text_data):
-                return
-            elif is_online_image_url(text_data['message']):
-                response = text_data['message']
-                self.send_image_message(response)
-            else:
-                text_data['message'] = text_data['name'] + ": " + text_data['message']
-                self.send_chat_message(text_data['message'])
-        elif text_data['type'] == 'image':
-            self.send_image_message(text_data['image'])
+    #     if text_data['type'] == 'message':
+    #         if " shabi " in text_data['message'] or "傻逼" in text_data['message']:
+    #             text_data['message'] = f"服务器:【{self.customer_name}】你才是傻逼 "
+    #             self.send(text_data['message'])
+    #         elif self.check_if_static_image(text_data):
+    #             return
+    #         elif is_online_image_url(text_data['message']):
+    #             response = text_data['message']
+    #             self.send_image_message(response)
+    #         else:
+    #             text_data['message'] = text_data['name'] + ": " + text_data['message']
+    #             self.send_chat_message(text_data['message'])
+    #     elif text_data['type'] == 'image':
+    #         self.send_image_message(text_data['image'])
 
     def websocket_disconnect(self, message):
         async_to_sync(self.channel_layer.group_discard)("chat_room", self.channel_name)

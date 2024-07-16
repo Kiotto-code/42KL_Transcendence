@@ -6,8 +6,7 @@ from .models import Profile
 
 
 def home(request):
-    group_num = request.GET.get('group_num')
-    return render(request, 'home.html', {'group_num': group_num})
+    return render(request, 'home.html')
 
 
 def userProfile(request, pk):

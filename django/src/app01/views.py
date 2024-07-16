@@ -9,10 +9,12 @@ from django.contrib.auth.decorators import login_required
 
 # Create your views here.
 def chat(request):
-    return render(request, 'chat.html')
+    group_num = request.GET.get('group_num')
+    return render(request, 'chat.html', {'group_num': group_num})
 
 def friendchat(request):
-    return render(request, 'friend_chat.html')
+    group_num = request.GET.get('group_num')
+    return render(request, 'friend_chat.html', {'group_num': group_num})
 
 @login_required
 def send_message(request, receiver_id):

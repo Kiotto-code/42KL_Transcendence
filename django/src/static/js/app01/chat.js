@@ -3,8 +3,10 @@ const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
 const port = window.location.port || (protocol === 'wss:' ? '443' : '80');
 const name = encodeURIComponent(nickname);
 
-const socketURL = `${protocol}//${host}:${port}/room/123/?customer_name=${name}`;
-// const socketURL = f`${protocol}//${host}:${port}/room/{{ group_num }}/?customer_name=${name}`;
+const num = 123;
+const socketURL = `${protocol}//${host}:${port}/room/${ num }/?customer_name=${name}`;
+// const socketURL = `${protocol}//${host}:${port}/room/123/?customer_name=${name}`;
+// const socketURL = `${protocol}//${host}:${port}/room/{{ group_num }}/?customer_name=${name}`;
 
 let socket = null;
 

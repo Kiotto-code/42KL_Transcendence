@@ -76,9 +76,10 @@ class ChatConsumer(WebsocketConsumer):
             self.send(json.dumps(error_message))
 
     def websocket_connect(self, message):
+        self.chat_room = '123'
         self.accept()
         if self.channel_layer is not None:
-            async_to_sync(self.channel_layer.group_add)("chat_room", self.channel_name)
+            async_to_sync(self.channel_layer.group_add)(self.chat_room, self.channel_name)
         else:
             print("Channel Layer return None")
         
@@ -105,12 +106,12 @@ class ChatConsumer(WebsocketConsumer):
     #         self.send_image_message(text_data['image'])
 
     def websocket_disconnect(self, message):
-        async_to_sync(self.channel_layer.group_discard)("chat_room", self.channel_name)
+        async_to_sync(self.channel_layer.group_discard)(self.chat_room, self.channel_name)
         raise StopConsumer()
 
     def send_chat_message(self, message):
         async_to_sync(self.channel_layer.group_send)(
-            "chat_room",
+            self.chat_room,
             {
                 "type": "chat.message",
                 "message": message
@@ -122,7 +123,7 @@ class ChatConsumer(WebsocketConsumer):
         query_params = parse_qs(self.scope['query_string'].decode())
         self.customer_name = query_params.get('customer_name', ['Anonymous'])[0]
         async_to_sync(self.channel_layer.group_send)(
-            "chat_room",
+            self.chat_room,
             {
                 "type": "image.message",
                 "name": self.customer_name,

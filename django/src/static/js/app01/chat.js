@@ -3,8 +3,16 @@ const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
 const port = window.location.port || (protocol === 'wss:' ? '443' : '80');
 const name = encodeURIComponent(nickname);
 
-const num = 123;
-const socketURL = `${protocol}//${host}:${port}/room/${ num }/?customer_name=${name}`;
+let currentUrl = window.location.href;
+let url = new URL(currentUrl);
+let group_num = url.searchParams.get('room');
+// let group_num = {num};
+
+if (!group_num) {
+    group_num = 123;
+}
+
+const socketURL = `${protocol}//${host}:${port}/room/${ group_num }/?customer_name=${name}`;
 // const socketURL = `${protocol}//${host}:${port}/room/123/?customer_name=${name}`;
 // const socketURL = `${protocol}//${host}:${port}/room/{{ group_num }}/?customer_name=${name}`;
 
@@ -71,6 +79,7 @@ function openConnect(){
 
 newSocket();
 
+document.getElementById('fileInput').addEventListener('change', handleUpload);
 function handleUpload() {
     const fileInput = document.getElementById('fileInput');
     const file = fileInput.files[0];
@@ -96,6 +105,7 @@ function handleUpload() {
     } else {
         alert('Please select a file to upload.');
     }
+
 }
 
 // Display uploaded image
@@ -120,11 +130,67 @@ function displayImage(imageUrl, name) {
         scrollToBottom();
     };
 
-
+    imgElement.onerror = function() {
+        // Remove the image element if it fails to load
+        imgElement.remove();
+        
+        // Display an error message or a placeholder image
+        const errorMessage = document.createElement("div");
+        errorMessage.innerText = "Failed to load image";
+        errorMessage.style.color = "red";
+        imageContainer.appendChild(errorMessage);
+        
+        // Add a placeholder image if desired
+        const placeholder = document.createElement('img');
+        placeholder.src = 'static/images/meme/miku_impatient.png'; // Provide a valid path to a placeholder image
+        placeholder.style.maxWidth = '100px';
+        placeholder.style.display = 'inline-block';
+        imageContainer.appendChild(placeholder);
+        
+        imageContainer.appendChild(document.createElement("div")).innerText = "\n";
+        scrollToBottom();
+    };
 
 
     // imageContainer.appendChild(document.createElement('br'));
 }
+
+function resizeImage(image) {
+    const container = document.getElementById('imageContainer');
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+
+    // Set canvas size to container size
+    canvas.width = container.offsetWidth;
+    canvas.height = container.offsetHeight;
+
+    // Calculate aspect ratio
+    const scale = Math.min(canvas.width / image.width, canvas.height / image.height);
+    const x = (canvas.width - image.width * scale) / 2;
+    const y = (canvas.height - image.height * scale) / 2;
+
+    // Draw the image on the canvas
+    ctx.drawImage(image, x, y, image.width * scale, image.height * scale);
+
+    // Convert canvas to data URL and set it as the image source
+    const resizedImage = document.getElementById('resizedImage');
+    resizedImage.src = canvas.toDataURL('image/jpeg');
+}
+
+// document.getElementById('uploadButton').addEventListener('click', () => {
+//     const resizedImage = document.getElementById('resizedImage');
+//     if (resizedImage.src) {
+//         // Upload the resized image (data URL) to the server or handle it as needed
+//         console.log('Image data URL:', resizedImage.src);
+
+//         // Example of uploading the image:
+//         // const formData = new FormData();
+//         // formData.append('image', resizedImage.src);
+//         // fetch('/upload', { method: 'POST', body: formData });
+//     } else {
+//         alert('No image to upload.');
+//     }
+// });
 
 function sendMessage() {
     if (socket.readyState === WebSocket.OPEN) {
@@ -212,3 +278,26 @@ function closeConnect(){
     socket.close(); //关闭连接 //向服务器发送断开连接的请求
 }
 
+var dataURLToBlob = function(dataURL) {
+    var BASE64_MARKER = ';base64,';
+    if (dataURL.indexOf(BASE64_MARKER) == -1) {
+        var parts = dataURL.split(',');
+        var contentType = parts[0].split(':')[1];
+        var raw = parts[1];
+
+        return new Blob([raw], {type: contentType});
+    }
+
+    var parts = dataURL.split(BASE64_MARKER);
+    var contentType = parts[0].split(':')[1];
+    var raw = window.atob(parts[1]);
+    var rawLength = raw.length;
+
+    var uInt8Array = new Uint8Array(rawLength);
+
+    for (var i = 0; i < rawLength; ++i) {
+        uInt8Array[i] = raw.charCodeAt(i);
+    }
+
+    return new Blob([uInt8Array], {type: contentType});
+}

@@ -2,6 +2,7 @@ from channels.generic.websocket import AsyncWebsocketConsumer
 from channels.exceptions import StopConsumer
 from asgiref.sync import sync_to_async
 from urllib.parse import parse_qs
+import asyncio
 import re
 import json
 
@@ -13,9 +14,22 @@ TABLE = {
 }
 
 def is_online_image_url(url):
+    # Regular expression to match common image file extensions
     image_extensions = ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'svg', 'webp']
-    pattern = r'^https?://.*\.(' + '|'.join(image_extensions) + r')$'
-    return bool(re.match(pattern, url, re.IGNORECASE))
+    pattern2 = r'^(?:data:image/(?:png|jpeg|gif|webp);base64,)'
+    pattern1 = r'^https?://.*\.(' + '|'.join(image_extensions) + r')'
+    pattern3 = r'^https?://images.*\.(' + '|'+ r')'
+
+    combined_pattern = f"({pattern1})|({pattern3})|({pattern2}.*)"
+    
+    # Compile the regex pattern
+    regex = re.compile(combined_pattern, re.IGNORECASE)
+    
+    # Check if the URL matches the pattern
+    if regex.match(url):
+        return True
+    else:
+        return False
 
 class ChatConsumer(AsyncWebsocketConsumer):
 

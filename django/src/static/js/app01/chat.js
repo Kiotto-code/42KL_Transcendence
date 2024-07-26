@@ -157,13 +157,17 @@ function displayImage(imageUrl, name) {
     
     // Create a container for the image and username
     const messageWrapper = document.createElement('div');
-    messageWrapper.style.display = 'block'; // Align items horizontally
+    messageWrapper.style.display = 'inline-flex'; // Align items horizontally
 
     // Create and style the username element
     const username = document.createElement("span");
-    username.innerText = name + " : ";
+    username.textContent = name;
+    username.textContent.endsWith('：') ? username.textContent : username.textContent += '：';
     username.style.color = "blue";
-    username.style.marginRight = '10px'; // Add some space between username and image
+    username.style.fontWeight = 'bold';
+    // username.style.width = "auto";
+    // username.style.display = 'inline-flex';
+    username.style.marginRight = '10px';
     
     // Create the image element
     const imgElement = document.createElement('img');
@@ -209,6 +213,8 @@ function displayImage(imageUrl, name) {
 function sendMessage() {
     if (socket.readyState === WebSocket.OPEN) {
         let message = document.getElementById("txt").value.trim();
+        // message.focus();
+        // message.setSelectionRange(7, 7);
         if (message !== "") {
             socket.send(JSON.stringify({
                 'type': 'message',
@@ -232,6 +238,7 @@ function displayChatMessage(data, name) {
     }
 
     let message = document.createElement("div");
+    message.style.display = 'flex';
     let messageText = data.trim();
 
     // Regular expression to detect "name: message" format
@@ -240,12 +247,16 @@ function displayChatMessage(data, name) {
 
     if (match) {
         let username = document.createElement("span");
-        username.textContent = match[1].trim() + " :";
+        username.textContent = name;
+        username.textContent.endsWith('：') ? username.textContent : username.textContent += '：';
         username.style.color = "blue";
+        username.style.fontWeight = 'bold';
+        username.style.width = "70px";
+        // username.style.display = 'inline-flex';
         username.style.marginRight = '10px';
 
-        let placeholderContainer = document.createElement("div");
-        placeholderContainer.style.padding = '5px'; // Padding for content
+        let placeholderContainer = document.createElement("span");
+        placeholderContainer.style.padding = '0px'; // Padding for content
         placeholderContainer.style.display = 'inline-block'; // Ensure it fits content width
         placeholderContainer.style.maxWidth = 'calc(100% - 50px)'; // Prevent overflow
 

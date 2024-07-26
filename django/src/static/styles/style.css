@@ -1187,12 +1187,13 @@ a {
 
 .message {
   margin: auto;
-  /* text-align:center; */
   height: 250px;
   border: 1px solid #601616;
   width: 50%;
-  overflow: scroll;
-  scrollbar-gutter: auto;
+  overflow-y: scroll; /* Enable vertical scrolling */
+  overflow-x: hidden; /* Disable horizontal scrolling */
+  word-wrap: break-word; /* Ensure text wraps within the container */
+  box-sizing: border-box; /* Include border and padding in the element's total width and height */
 }
 
 .notification {

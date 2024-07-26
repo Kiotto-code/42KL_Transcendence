@@ -5,17 +5,9 @@ const name = encodeURIComponent(nickname);
 
 let currentUrl = window.location.href;
 let url = new URL(currentUrl);
-let group_num = url.searchParams.get('room');
-// let group_num = {num};
+let group_num = url.searchParams.get('room') || 123;
 
-if (!group_num) {
-    group_num = 123;
-}
-
-const socketURL = `${protocol}//${host}:${port}/room/${ group_num }/?customer_name=${name}`;
-// const socketURL = `${protocol}//${host}:${port}/room/123/?customer_name=${name}`;
-// const socketURL = `${protocol}//${host}:${port}/room/{{ group_num }}/?customer_name=${name}`;
-
+const socketURL = `${protocol}//${host}:${port}/room/${group_num}/?customer_name=${name}`;
 let socket = null;
 
 function newSocket() {
@@ -26,44 +18,15 @@ function newSocket() {
     socket = new WebSocket(socketURL);
 
     socket.onopen = function(event) {
-        console.log("WebSocket connection opened.");
-        let tag = document.createElement("div");
-        tag.innerText = "连接成功";
-        tag.style.color = "green";
-        tag.append("\t你有朋友了 (｡♥‿♥｡) ");
-        // document.querySelector(".message").appendChild(tag);
-        message_sect = document.querySelector(".message")
-        if (message_sect) {
-            message_sect.appendChild(tag);
-        }
+        handleSocketOpen();
     };
 
     socket.onmessage = function(event) {
-        const data = JSON.parse(event.data);
-        if (data.type === 'message') {
-            displayChatMessage(data.message);
-        } else if (data.type === 'image') {
-            displayImage(data.image, data.name);
-            // displayImageMessage(data.image);
-        }
-        else {
-            displayChatMessage(data.message);
-        }
-        scrollToBottom();
+        handleSocketMessage(event);
     };
-    
 
     socket.onclose = function(event) {
-        console.log("WebSocket connection closed.");
-        logMessage(nickname + '连接已断开', 'error');
-        let tag = document.createElement("div");
-        tag.innerText = "连接关闭";
-        tag.append("\t你没朋友了 ｡ﾟ･ (>﹏<) ･ﾟ｡ ");
-        tag.style.color = "red";
-        message_sect = document.querySelector(".message")
-        if (message_sect.hasChildNodes()) {
-            message_sect.appendChild(tag);
-        }
+        handleSocketClose();
     };
 
     socket.onerror = function(error) {
@@ -71,13 +34,41 @@ function newSocket() {
     };
 }
 
-function openConnect(){
-    if (socket.readyState === WebSocket.OPEN)
-        return;
+function openConnect() {
+    if (socket.readyState === WebSocket.OPEN) return;
     newSocket();
 }
 
 newSocket();
+
+function closeConnect() {
+    if (socket) {
+        socket.close(); // Close the connection
+    }
+}
+
+function handleSocketOpen() {
+    console.log("WebSocket connection opened.");
+    appendStatusMessage("连接成功", "green", "你有朋友了 (｡♥‿♥｡)\n");
+}
+
+function handleSocketMessage(event) {
+    const data = JSON.parse(event.data);
+    if (data.type === 'message') {
+        displayChatMessage(data.message, data.name);
+    } else if (data.type === 'image') {
+        displayImage(data.image, data.name);
+    }else {
+        displayChatMessage(data.message, data.name);
+    }
+    scrollToBottom();
+}
+
+function handleSocketClose() {
+    console.log("WebSocket connection closed.");
+    logMessage(nickname + '连接已断开', 'error');
+    appendStatusMessage("连接关闭", "red", "你没朋友了 ｡ﾟ･ (>﹏<) ･ﾟ｡\n");
+}
 
 document.getElementById('fileInput').addEventListener('change', handleUpload);
 function handleUpload() {
@@ -85,6 +76,12 @@ function handleUpload() {
     const file = fileInput.files[0];
 
     if (file) {
+        const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5 MB
+
+        if (file.size > MAX_FILE_SIZE) {
+            alert('File size exceeds the 5 MB limit.');
+            return; // Exit the function if file size is too large
+        }
         const reader = new FileReader();
 
         reader.onload = function(event) {
@@ -109,88 +106,105 @@ function handleUpload() {
 }
 
 // Display uploaded image
+// function displayImage(imageUrl, name) {
+//     const imageContainer = document.getElementById('message-container');
+//     const imgElement = document.createElement('img');
+//     imgElement.src = imageUrl;
+//     imgElement.style.maxWidth = '100px'; // Adjust styling as needed
+//     imgElement.style.display = 'inline-block';
+    
+//     let username = document.createElement("div");
+//     username.innerText = name + " : ";
+//     username.style.color = "blue";
+//     imageContainer.appendChild(username);
+    
+//     imgElement.onload = function() {
+//         imageContainer.appendChild(imgElement);
+//         // let username = document.createElement("div");
+//         // username.innerText = "\n";
+//         imageContainer.appendChild(document.createElement("div")).innerText = "\n";
+        
+//         scrollToBottom();
+//     };
+
+//     imgElement.onerror = function() {
+//         // Remove the image element if it fails to load
+//         imgElement.remove();
+        
+//         // Display an error message or a placeholder image
+//         const errorMessage = document.createElement("div");
+//         errorMessage.innerText = "Failed to load image";
+//         errorMessage.style.color = "red";
+//         imageContainer.appendChild(errorMessage);
+        
+//         // Add a placeholder image if desired
+//         const placeholder = document.createElement('img');
+//         placeholder.src = 'static/images/meme/miku_impatient.png'; // Provide a valid path to a placeholder image
+//         placeholder.style.maxWidth = '100px';
+//         placeholder.style.display = 'inline-block';
+//         imageContainer.appendChild(placeholder);
+        
+//         imageContainer.appendChild(document.createElement("div")).innerText = "\n";
+//         scrollToBottom();
+//     };
+
+
+//     // imageContainer.appendChild(document.createElement('br'));
+// }
+
 function displayImage(imageUrl, name) {
     const imageContainer = document.getElementById('message-container');
+    
+    // Create a container for the image and username
+    const messageWrapper = document.createElement('div');
+    messageWrapper.style.display = 'block'; // Align items horizontally
+
+    // Create and style the username element
+    const username = document.createElement("span");
+    username.innerText = name + " : ";
+    username.style.color = "blue";
+    username.style.marginRight = '10px'; // Add some space between username and image
+    
+    // Create the image element
     const imgElement = document.createElement('img');
     imgElement.src = imageUrl;
     imgElement.style.maxWidth = '100px'; // Adjust styling as needed
+    imgElement.style.height = 'auto'; // Maintain aspect ratio
     imgElement.style.display = 'inline-block';
-    
-    let username = document.createElement("div");
-    username.innerText = name + " : ";
-    username.style.color = "blue";
-    imageContainer.appendChild(username);
-    
+
+    // Add a placeholder for the image
+    const placeholderUrl = 'static/images/meme/miku_impatient.png'; // Path to placeholder image
+    const placeholder = document.createElement('img');
+    placeholder.src = placeholderUrl;
+    placeholder.style.maxWidth = '100px';
+    placeholder.style.height = 'auto';
+    placeholder.style.display = 'none'; // Initially hidden
+
+    // Append username and image to the wrapper
+    messageWrapper.appendChild(username);
+    messageWrapper.appendChild(imgElement);
+    messageWrapper.appendChild(placeholder);
+    imageContainer.appendChild(messageWrapper);
+
+    // Handle image load success
     imgElement.onload = function() {
-        imageContainer.appendChild(imgElement);
-        // let username = document.createElement("div");
-        // username.innerText = "\n";
+        placeholder.style.display = 'none'; // Hide placeholder if image loads successfully
         imageContainer.appendChild(document.createElement("div")).innerText = "\n";
-        
         scrollToBottom();
     };
 
+    // Handle image load error
     imgElement.onerror = function() {
-        // Remove the image element if it fails to load
-        imgElement.remove();
-        
-        // Display an error message or a placeholder image
+        imgElement.style.display = 'none'; // Hide the actual image
+        placeholder.style.display = 'inline-block'; // Show placeholder
         const errorMessage = document.createElement("div");
         errorMessage.innerText = "Failed to load image";
         errorMessage.style.color = "red";
         imageContainer.appendChild(errorMessage);
-        
-        // Add a placeholder image if desired
-        const placeholder = document.createElement('img');
-        placeholder.src = 'static/images/meme/miku_impatient.png'; // Provide a valid path to a placeholder image
-        placeholder.style.maxWidth = '100px';
-        placeholder.style.display = 'inline-block';
-        imageContainer.appendChild(placeholder);
-        
-        imageContainer.appendChild(document.createElement("div")).innerText = "\n";
         scrollToBottom();
     };
-
-
-    // imageContainer.appendChild(document.createElement('br'));
 }
 
-function resizeImage(image) {
-    const container = document.getElementById('imageContainer');
-    const canvas = document.createElement('canvas');
-    const ctx = canvas.getContext('2d');
-
-    // Set canvas size to container size
-    canvas.width = container.offsetWidth;
-    canvas.height = container.offsetHeight;
-
-    // Calculate aspect ratio
-    const scale = Math.min(canvas.width / image.width, canvas.height / image.height);
-    const x = (canvas.width - image.width * scale) / 2;
-    const y = (canvas.height - image.height * scale) / 2;
-
-    // Draw the image on the canvas
-    ctx.drawImage(image, x, y, image.width * scale, image.height * scale);
-
-    // Convert canvas to data URL and set it as the image source
-    const resizedImage = document.getElementById('resizedImage');
-    resizedImage.src = canvas.toDataURL('image/jpeg');
-}
-
-// document.getElementById('uploadButton').addEventListener('click', () => {
-//     const resizedImage = document.getElementById('resizedImage');
-//     if (resizedImage.src) {
-//         // Upload the resized image (data URL) to the server or handle it as needed
-//         console.log('Image data URL:', resizedImage.src);
-
-//         // Example of uploading the image:
-//         // const formData = new FormData();
-//         // formData.append('image', resizedImage.src);
-//         // fetch('/upload', { method: 'POST', body: formData });
-//     } else {
-//         alert('No image to upload.');
-//     }
-// });
 
 function sendMessage() {
     if (socket.readyState === WebSocket.OPEN) {
@@ -209,13 +223,194 @@ function sendMessage() {
     }
 }
 
-const styles = {
-    default: 'color: black;',
-    warning: 'color: orange; font-weight: bold;',
-    error: 'color: red; font-weight: bold;'
-};
+url='https://upload.wikimedia.org/wikipedia/commons/0/09/Blackpink_Coachella_2023_02_%28cropped%29.jpg';
+
+function displayChatMessage(data, name) {
+    if (typeof data !== 'string') {
+        console.error('Invalid input: expected a string.');
+        return;
+    }
+
+    let message = document.createElement("div");
+    let messageText = data.trim();
+
+    // Regular expression to detect "name: message" format
+    let regex = /^([^:]*):(.*)$/;
+    let match = regex.exec(messageText);
+
+    if (match) {
+        let username = document.createElement("span");
+        username.textContent = match[1].trim() + " :";
+        username.style.color = "blue";
+        username.style.marginRight = '10px';
+
+        let placeholderContainer = document.createElement("div");
+        placeholderContainer.style.padding = '5px'; // Padding for content
+        placeholderContainer.style.display = 'inline-block'; // Ensure it fits content width
+        placeholderContainer.style.maxWidth = 'calc(100% - 50px)'; // Prevent overflow
+
+        let content = match[2].trim();
+
+        // Replace URLs with anchor tags
+        content = content.replace(/(https?:\/\/[^\s]+)/g, (url) => {
+            return `<a href="${url}" target="_blank" rel="noopener noreferrer">${url}</a>`;
+        });
+
+        // Set the HTML content with links
+        placeholderContainer.innerHTML = content;
+
+        message.appendChild(username);
+        message.appendChild(placeholderContainer);
+    } else {
+        // Replace URLs with anchor tags if no colon is found
+        messageText = messageText.replace(/(https?:\/\/[^\s]+)/g, (url) => {
+            return `<a href="${url}" target="_blank" rel="noopener noreferrer">${url}</a>`;
+        });
+
+        let placeholderContainer = document.createElement("div");
+        placeholderContainer.style.border = '1px solid #ddd'; // Style the border
+        placeholderContainer.style.borderRadius = '5px'; // Rounded corners
+        placeholderContainer.style.padding = '5px'; // Padding for content
+        placeholderContainer.style.backgroundColor = '#f9f9f9'; // Background color
+        placeholderContainer.style.display = 'inline-block'; // Ensure it fits content width
+        placeholderContainer.style.maxWidth = 'calc(100% - 50px)'; // Prevent overflow
+
+        let textNode = document.createElement("span");
+        textNode.innerHTML = messageText;
+
+        placeholderContainer.appendChild(textNode);
+        message.appendChild(placeholderContainer);
+    }
+
+    let messageContainer = document.querySelector(".message");
+    if (messageContainer) {
+        messageContainer.appendChild(message);
+    } else {
+        console.error('Element with class "message" not found.');
+    }
+}
+
+// function displayChatMessage(data) {
+//     if (typeof data !== 'string') {
+//         console.error('Invalid input: expected a string.');
+//         return;
+//     }
+
+//     let message = document.createElement("div");
+//     let messageText = data.trim();
+
+//     // Regular expression to detect "name: message" format
+//     let regex = /^([^:]*):(.*)$/;
+//     let match = regex.exec(messageText);
+
+//     if (match) {
+//         let username = document.createElement("span");
+//         username.textContent = match[1].trim() + " : ";
+//         username.style.color = "blue";
+//         username.style.marginRight = '10px'; 
+
+//         let textAfterColon = document.createElement("span");
+//         let content = match[2].trim();
+
+//         // Replace URLs with anchor tags
+//         content = content.replace(/(https?:\/\/[^\s]+)/g, (url) => {
+//             return `<a href="${url}" target="_blank" rel="noopener noreferrer">${url}</a>`;
+//         });
+
+//         // Set the HTML content with links
+//         textAfterColon.innerHTML = content;
+
+//         message.appendChild(username);
+//         // message.appendChild(document.createTextNode(" : "));
+//         message.appendChild(textAfterColon);
+//     } else {
+//         // Replace URLs with anchor tags if no colon is found
+//         messageText = messageText.replace(/(https?:\/\/[^\s]+)/g, (url) => {
+//             return `<a href="${url}" target="_blank" rel="noopener noreferrer">${url}</a>`;
+//         });
+
+//         let textNode = document.createElement("span");
+//         textNode.innerHTML = messageText;
+//         message.appendChild(textNode);
+//     }
+
+//     let messageContainer = document.querySelector(".message");
+//     if (messageContainer) {
+//         messageContainer.appendChild(message);
+//     } else {
+//         console.error('Element with class "message" not found.');
+//     }
+// }
+
+
+// function displayChatMessage(data) {
+//     let message = document.createElement("div");
+//     let messageText = data.trim();
+
+//     // Regular expression to detect a URL (basic version)
+//     let urlRegex = /(https?:\/\/[^\s]+)/g;
+
+//     // Regular expression to detect "name: message" format
+//     let regex = /^([^:]*):(.*)$/;
+//     let match = regex.exec(messageText);
+
+//     if (match) {
+//         let textBeforeColon = document.createElement("span");
+//         textBeforeColon.textContent = match[1].trim();
+//         textBeforeColon.style.color = "blue";
+
+//         // Create a container for the message content
+//         let textAfterColon = document.createElement("span");
+//         let content = match[2].trim();
+
+//         // Replace URLs with anchor tags
+//         content = content.replace(urlRegex, (url) => {
+//             return `<a href="https://upload.wikimedia.org/wikipedia/commons/0/09/Blackpink_Coachella_2023_02_%28cropped%29.jpg" target="_blank" rel="noopener noreferrer">${url}</a>`;
+//         });
+
+//         // Set the HTML content with links
+//         textAfterColon.innerHTML = content;
+
+//         message.appendChild(textBeforeColon);
+//         message.appendChild(document.createTextNode(" : "));
+//         message.appendChild(textAfterColon);
+//     } else {
+//         // Replace URLs with anchor tags if no colon is found
+//         messageText = messageText.replace(urlRegex, (url) => {
+//             return `<a href="https://upload.wikimedia.org/wikipedia/commons/0/09/Blackpink_Coachella_2023_02_%28cropped%29.jpg" target="_blank" rel="noopener noreferrer">${url}</a>`;
+//         });
+        
+//         let textNode = document.createElement("span");
+//         textNode.innerHTML = messageText;
+//         message.appendChild(textNode);
+//     }
+
+//     document.querySelector(".message").appendChild(message);
+// }
+
+
+function appendStatusMessage(status, color, message) {
+    let tag = document.createElement("div");
+    tag.innerText = status;
+    tag.style.color = color;
+    tag.append(`\t${message}`);
+    let message_sect = document.querySelector(".message");
+    if (message_sect) {
+        message_sect.appendChild(tag);
+    }
+}
+
+function scrollToBottom() {
+    var messageContainer = document.getElementById('message-container');
+    messageContainer.scrollTop = messageContainer.scrollHeight;
+}
 
 function logMessage(message, style = 'default') {
+    const styles = {
+        default: 'color: black;',
+        warning: 'color: orange; font-weight: bold;',
+        error: 'color: red; font-weight: bold;'
+    };
     console.log(`%c${message}`, styles[style]);
 }
 
@@ -233,71 +428,30 @@ function socket_state(socket) {
     }
 }
 
-function scrollToBottom() {
-    var messageContainer = document.getElementById('message-container');
-    messageContainer.scrollTop = messageContainer.scrollHeight;
-}
-
 function handleMessage(event) {
     if (event.key === "Enter") {
         sendMessage();
     }
 }
 
-function displayChatMessage(data) {
-    let message = document.createElement("div");
-    let messageText = data.trim();
-
-    // Regular expression to split the message by the first colon
-    let regex = /^([^:]*):(.*)$/;
-    let match = regex.exec(messageText);
-
-    if (match) {
-        let textBeforeColon = document.createElement("span");
-        textBeforeColon.textContent = match[1].trim();
-        textBeforeColon.style.color = "blue"; // Example: change color to blue
-
-        let textAfterColon = document.createElement("span");
-        textAfterColon.textContent = match[2].trim();
-
-        message.appendChild(textBeforeColon);
-        message.appendChild(document.createTextNode(": ")); // Add colon separator
-        message.appendChild(textAfterColon);
-    } else {
-        let textNode = document.createTextNode(messageText);
-        message.appendChild(textNode);
+function dataURLToBlob(dataURL) {
+    const BASE64_MARKER = ';base64,';
+    if (dataURL.indexOf(BASE64_MARKER) === -1) {
+        const parts = dataURL.split(',');
+        const contentType = parts[0].split(':')[1];
+        const raw = parts[1];
+        return new Blob([raw], { type: contentType });
     }
 
-    document.querySelector(".message").appendChild(message);
+    const parts = dataURL.split(BASE64_MARKER);
+    const contentType = parts[0].split(':')[1];
+    const raw = window.atob(parts[1]);
+    const rawLength = raw.length;
 
-    // Optionally, scroll to the bottom of the chat container
-    // scrollToBottom();
-}
-
-function closeConnect(){
-    socket.close(); //关闭连接 //向服务器发送断开连接的请求
-}
-
-var dataURLToBlob = function(dataURL) {
-    var BASE64_MARKER = ';base64,';
-    if (dataURL.indexOf(BASE64_MARKER) == -1) {
-        var parts = dataURL.split(',');
-        var contentType = parts[0].split(':')[1];
-        var raw = parts[1];
-
-        return new Blob([raw], {type: contentType});
-    }
-
-    var parts = dataURL.split(BASE64_MARKER);
-    var contentType = parts[0].split(':')[1];
-    var raw = window.atob(parts[1]);
-    var rawLength = raw.length;
-
-    var uInt8Array = new Uint8Array(rawLength);
-
-    for (var i = 0; i < rawLength; ++i) {
+    const uInt8Array = new Uint8Array(rawLength);
+    for (let i = 0; i < rawLength; ++i) {
         uInt8Array[i] = raw.charCodeAt(i);
     }
 
-    return new Blob([uInt8Array], {type: contentType});
+    return new Blob([uInt8Array], { type: contentType });
 }

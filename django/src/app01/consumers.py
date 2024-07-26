@@ -51,7 +51,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
             if text_data['type'] == 'message':
                 if " shabi " in text_data['message'] or "傻逼" in text_data['message']:
                     text_data['message'] = f"服务器:【{self.customer_name}】你才是傻逼 "
-                    await self.send(text_data['message'])
+                    await self.send_self_chat_message(text_data['message'])
                 elif self.check_if_static_image(text_data):
                     return
                 elif is_online_image_url(text_data['message']):
@@ -75,13 +75,31 @@ class ChatConsumer(AsyncWebsocketConsumer):
         raise StopConsumer()
 
     async def send_chat_message(self, message):
+        query_params = parse_qs(self.scope['query_string'].decode())
+        self.customer_name = query_params.get('customer_name', ['Anonymous'])[0]
         await self.channel_layer.group_send(
             self.chat_room,
             {
                 "type": "chat.message",
+                "name": self.customer_name,
                 "message": message
             }
         )
+
+    async def send_self_chat_message(self, message):
+        query_params = parse_qs(self.scope['query_string'].decode())
+        self.customer_name = query_params.get('customer_name', ['Anonymous'])[0]
+        
+        # Create a message with image data
+        message = {
+            "type": "image.message",
+            "name": self.customer_name,
+            "message": message
+        }
+        # Send the message directly to the WebSocket channel
+        await self.send(text_data=json.dumps(message))
+
+
 
     async def send_image_message(self, image_data):
         query_params = parse_qs(self.scope['query_string'].decode())
@@ -98,6 +116,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
     async def chat_message(self, event):
         await self.send(text_data=json.dumps({
             'type': 'message',
+            'name': event['name'],
             'message': event['message']
         }))
 

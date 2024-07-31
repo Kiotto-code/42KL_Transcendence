@@ -5,7 +5,7 @@ const name = encodeURIComponent(nickname);
 
 let currentUrl = window.location.href;
 let url = new URL(currentUrl);
-let group_num = url.searchParams.get('room') || 123;
+let group_num = url.searchParams.get('room_name') || 123;
 
 const socketURL = `${protocol}//${host}:${port}/room/${group_num}/?customer_name=${name}`;
 let socket = null;
@@ -39,7 +39,8 @@ function openConnect() {
     newSocket();
 }
 
-newSocket();
+// newSocket();
+openConnect();
 
 function closeConnect() {
     if (socket) {

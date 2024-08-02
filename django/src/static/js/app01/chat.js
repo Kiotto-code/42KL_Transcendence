@@ -5,7 +5,7 @@ const name = encodeURIComponent(nickname);
 
 let currentUrl = window.location.href;
 let url = new URL(currentUrl);
-let group_num = url.searchParams.get('room_name') || 123;
+let group_num = url.searchParams.get('room') || 123;
 
 const socketURL = `${protocol}//${host}:${port}/room/${group_num}/?customer_name=${name}`;
 let socket = null;
@@ -39,8 +39,7 @@ function openConnect() {
     newSocket();
 }
 
-// newSocket();
-openConnect();
+newSocket();
 
 function closeConnect() {
     if (socket) {
@@ -249,7 +248,9 @@ function displayChatMessage(data, name) {
     if (match) {
         let username = document.createElement("span");
         username.textContent = name;
-        username.textContent.endsWith('：') ? username.textContent : username.textContent += '：';
+        // username.textContent.endsWith('：') ? username.textContent : username.textContent += '：';
+        username.textContent = name + " :";
+        // username.textContent = match[1].trim() + " :";
         username.style.color = "blue";
         username.style.fontWeight = 'bold';
         username.style.width = "70px";

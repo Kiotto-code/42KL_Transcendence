@@ -5,7 +5,7 @@ const name = encodeURIComponent(nickname);
 
 let currentUrl = window.location.href;
 let url = new URL(currentUrl);
-let group_num = url.searchParams.get('room_name') || 123;
+let group_num = url.searchParams.get('room') || 123;
 
 const socketURL = `${protocol}//${host}:${port}/room/${group_num}/?customer_name=${name}`;
 let socket = null;
@@ -39,8 +39,7 @@ function openConnect() {
     newSocket();
 }
 
-// newSocket();
-openConnect();
+newSocket();
 
 function closeConnect() {
     if (socket) {
@@ -158,16 +157,19 @@ function displayImage(imageUrl, name) {
     
     // Create a container for the image and username
     const messageWrapper = document.createElement('div');
-    messageWrapper.style.display = 'inline-flex'; // Align items horizontally
+    // messageWrapper.style.display = 'inline-flex'; // Align items horizontally
+    messageWrapper.style.display = 'flex'; // Align items horizontally
+    messageWrapper.style.padding = '0px 0px 5px 0px';
+    // messageWrapper.style.box-sizing = 'border-box';
 
     // Create and style the username element
     const username = document.createElement("span");
     username.textContent = name;
-    username.textContent.endsWith('：') ? username.textContent : username.textContent += '：';
+    username.textContent.endsWith(': ') ? username.textContent : username.textContent += '：';
     username.style.color = "blue";
     username.style.fontWeight = 'bold';
     // username.style.width = "auto";
-    // username.style.display = 'inline-flex';
+    username.style.display = 'inline-flex';
     username.style.marginRight = '10px';
     
     // Create the image element
@@ -194,7 +196,7 @@ function displayImage(imageUrl, name) {
     // Handle image load success
     imgElement.onload = function() {
         placeholder.style.display = 'none'; // Hide placeholder if image loads successfully
-        imageContainer.appendChild(document.createElement("div")).innerText = "\n";
+        // imageContainer.appendChild(document.createElement("div")).innerText = "\n";
         scrollToBottom();
     };
 
@@ -249,7 +251,9 @@ function displayChatMessage(data, name) {
     if (match) {
         let username = document.createElement("span");
         username.textContent = name;
-        username.textContent.endsWith('：') ? username.textContent : username.textContent += '：';
+        // username.textContent.endsWith('：') ? username.textContent : username.textContent += '：';
+        username.textContent = name + " :";
+        // username.textContent = match[1].trim() + " :";
         username.style.color = "blue";
         username.style.fontWeight = 'bold';
         username.style.width = "70px";

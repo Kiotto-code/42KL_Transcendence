@@ -1187,14 +1187,21 @@ a {
 
 .message {
   margin: auto;
+  background-color: #6be5f3;
   height: 250px;
   border: 3px solid #601616;
-  padding: 10px;
   width: 50%;
   overflow-y: scroll; /* Enable vertical scrolling */
   overflow-x: hidden; /* Disable horizontal scrolling */
   word-wrap: break-word; /* Ensure text wraps within the container */
   box-sizing: border-box; /* Include border and padding in the element's total width and height */
+}
+
+.chatPlaceholder {
+  color: #f112ee;
+  display:'inline-block';
+  max-width:'calc(100% - 50px)';
+
 }
 
 .notification {

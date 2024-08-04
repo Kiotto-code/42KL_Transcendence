@@ -105,53 +105,6 @@ function handleUpload() {
 
 }
 
-// Display uploaded image
-// function displayImage(imageUrl, name) {
-//     const imageContainer = document.getElementById('message-container');
-//     const imgElement = document.createElement('img');
-//     imgElement.src = imageUrl;
-//     imgElement.style.maxWidth = '100px'; // Adjust styling as needed
-//     imgElement.style.display = 'inline-block';
-    
-//     let username = document.createElement("div");
-//     username.innerText = name + " : ";
-//     username.style.color = "blue";
-//     imageContainer.appendChild(username);
-    
-//     imgElement.onload = function() {
-//         imageContainer.appendChild(imgElement);
-//         // let username = document.createElement("div");
-//         // username.innerText = "\n";
-//         imageContainer.appendChild(document.createElement("div")).innerText = "\n";
-        
-//         scrollToBottom();
-//     };
-
-//     imgElement.onerror = function() {
-//         // Remove the image element if it fails to load
-//         imgElement.remove();
-        
-//         // Display an error message or a placeholder image
-//         const errorMessage = document.createElement("div");
-//         errorMessage.innerText = "Failed to load image";
-//         errorMessage.style.color = "red";
-//         imageContainer.appendChild(errorMessage);
-        
-//         // Add a placeholder image if desired
-//         const placeholder = document.createElement('img');
-//         placeholder.src = 'static/images/meme/miku_impatient.png'; // Provide a valid path to a placeholder image
-//         placeholder.style.maxWidth = '100px';
-//         placeholder.style.display = 'inline-block';
-//         imageContainer.appendChild(placeholder);
-        
-//         imageContainer.appendChild(document.createElement("div")).innerText = "\n";
-//         scrollToBottom();
-//     };
-
-
-//     // imageContainer.appendChild(document.createElement('br'));
-// }
-
 function displayImage(imageUrl, name) {
     const imageContainer = document.getElementById('message-container');
     
@@ -232,7 +185,7 @@ function sendMessage() {
     }
 }
 
-url='https://upload.wikimedia.org/wikipedia/commons/0/09/Blackpink_Coachella_2023_02_%28cropped%29.jpg';
+// url='https://upload.wikimedia.org/wikipedia/commons/0/09/Blackpink_Coachella_2023_02_%28cropped%29.jpg';
 
 function displayChatMessage(data, name) {
     if (typeof data !== 'string') {
@@ -242,59 +195,31 @@ function displayChatMessage(data, name) {
 
     let message = document.createElement("div");
     message.style.display = 'flex';
-    let messageText = data.trim();
-
-    // Regular expression to detect "name: message" format
-    let regex = /^([^:]*):(.*)$/;
-    let match = regex.exec(messageText);
-
-    if (match) {
+    message.style.padding = '0px 0px 5px 0px';
+    message.style.lineHeight = '0.8';
+ 
+    if (data) {
         let username = document.createElement("span");
         username.textContent = name;
-        // username.textContent.endsWith('：') ? username.textContent : username.textContent += '：';
         username.textContent = name + " :";
-        // username.textContent = match[1].trim() + " :";
         username.style.color = "blue";
         username.style.fontWeight = 'bold';
         username.style.width = "70px";
-        // username.style.display = 'inline-flex';
         username.style.marginRight = '10px';
 
         let placeholderContainer = document.createElement("span");
-        placeholderContainer.style.padding = '0px'; // Padding for content
-        placeholderContainer.style.display = 'inline-block'; // Ensure it fits content width
-        placeholderContainer.style.maxWidth = 'calc(100% - 50px)'; // Prevent overflow
+        placeholderContainer.classList.add('chatPlaceholder');
 
-        let content = match[2].trim();
-
-        // Replace URLs with anchor tags
-        content = content.replace(/(https?:\/\/[^\s]+)/g, (url) => {
-            return `<a href="${url}" target="_blank" rel="noopener noreferrer">${url}</a>`;
-        });
-
-        // Set the HTML content with links
+        let content = data;
         placeholderContainer.innerHTML = content;
-
         message.appendChild(username);
         message.appendChild(placeholderContainer);
     } else {
-        // Replace URLs with anchor tags if no colon is found
-        messageText = messageText.replace(/(https?:\/\/[^\s]+)/g, (url) => {
-            return `<a href="${url}" target="_blank" rel="noopener noreferrer">${url}</a>`;
-        });
-
-        let placeholderContainer = document.createElement("div");
-        placeholderContainer.style.border = '1px solid #ddd'; // Style the border
-        placeholderContainer.style.borderRadius = '5px'; // Rounded corners
-        placeholderContainer.style.padding = '5px'; // Padding for content
-        placeholderContainer.style.backgroundColor = '#f9f9f9'; // Background color
-        placeholderContainer.style.display = 'inline-block'; // Ensure it fits content width
-        placeholderContainer.style.maxWidth = 'calc(100% - 50px)'; // Prevent overflow
 
         let textNode = document.createElement("span");
         textNode.innerHTML = messageText;
 
-        placeholderContainer.appendChild(textNode);
+        message.appendChild(textNode);
         message.appendChild(placeholderContainer);
     }
 
@@ -305,104 +230,6 @@ function displayChatMessage(data, name) {
         console.error('Element with class "message" not found.');
     }
 }
-
-// function displayChatMessage(data) {
-//     if (typeof data !== 'string') {
-//         console.error('Invalid input: expected a string.');
-//         return;
-//     }
-
-//     let message = document.createElement("div");
-//     let messageText = data.trim();
-
-//     // Regular expression to detect "name: message" format
-//     let regex = /^([^:]*):(.*)$/;
-//     let match = regex.exec(messageText);
-
-//     if (match) {
-//         let username = document.createElement("span");
-//         username.textContent = match[1].trim() + " : ";
-//         username.style.color = "blue";
-//         username.style.marginRight = '10px'; 
-
-//         let textAfterColon = document.createElement("span");
-//         let content = match[2].trim();
-
-//         // Replace URLs with anchor tags
-//         content = content.replace(/(https?:\/\/[^\s]+)/g, (url) => {
-//             return `<a href="${url}" target="_blank" rel="noopener noreferrer">${url}</a>`;
-//         });
-
-//         // Set the HTML content with links
-//         textAfterColon.innerHTML = content;
-
-//         message.appendChild(username);
-//         // message.appendChild(document.createTextNode(" : "));
-//         message.appendChild(textAfterColon);
-//     } else {
-//         // Replace URLs with anchor tags if no colon is found
-//         messageText = messageText.replace(/(https?:\/\/[^\s]+)/g, (url) => {
-//             return `<a href="${url}" target="_blank" rel="noopener noreferrer">${url}</a>`;
-//         });
-
-//         let textNode = document.createElement("span");
-//         textNode.innerHTML = messageText;
-//         message.appendChild(textNode);
-//     }
-
-//     let messageContainer = document.querySelector(".message");
-//     if (messageContainer) {
-//         messageContainer.appendChild(message);
-//     } else {
-//         console.error('Element with class "message" not found.');
-//     }
-// }
-
-
-// function displayChatMessage(data) {
-//     let message = document.createElement("div");
-//     let messageText = data.trim();
-
-//     // Regular expression to detect a URL (basic version)
-//     let urlRegex = /(https?:\/\/[^\s]+)/g;
-
-//     // Regular expression to detect "name: message" format
-//     let regex = /^([^:]*):(.*)$/;
-//     let match = regex.exec(messageText);
-
-//     if (match) {
-//         let textBeforeColon = document.createElement("span");
-//         textBeforeColon.textContent = match[1].trim();
-//         textBeforeColon.style.color = "blue";
-
-//         // Create a container for the message content
-//         let textAfterColon = document.createElement("span");
-//         let content = match[2].trim();
-
-//         // Replace URLs with anchor tags
-//         content = content.replace(urlRegex, (url) => {
-//             return `<a href="https://upload.wikimedia.org/wikipedia/commons/0/09/Blackpink_Coachella_2023_02_%28cropped%29.jpg" target="_blank" rel="noopener noreferrer">${url}</a>`;
-//         });
-
-//         // Set the HTML content with links
-//         textAfterColon.innerHTML = content;
-
-//         message.appendChild(textBeforeColon);
-//         message.appendChild(document.createTextNode(" : "));
-//         message.appendChild(textAfterColon);
-//     } else {
-//         // Replace URLs with anchor tags if no colon is found
-//         messageText = messageText.replace(urlRegex, (url) => {
-//             return `<a href="https://upload.wikimedia.org/wikipedia/commons/0/09/Blackpink_Coachella_2023_02_%28cropped%29.jpg" target="_blank" rel="noopener noreferrer">${url}</a>`;
-//         });
-        
-//         let textNode = document.createElement("span");
-//         textNode.innerHTML = messageText;
-//         message.appendChild(textNode);
-//     }
-
-//     document.querySelector(".message").appendChild(message);
-// }
 
 
 function appendStatusMessage(status, color, message) {

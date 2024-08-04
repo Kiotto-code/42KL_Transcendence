@@ -60,7 +60,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
                     response = text_data['message']
                     await self.send_image_message(response)
                 else:
-                    text_data['message'] = text_data['name'] + ": " + text_data['message']
+                    text_data['message'] = text_data['message']
                     await self.send_chat_message(text_data['message'])
             elif text_data['type'] == 'image':
                 await self.send_image_message(text_data['image'])

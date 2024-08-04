@@ -6,6 +6,7 @@
     
     
     {% if request.user.is_authenticated %}
+    {% comment %} <div id="app-config" nickname="{{ request.user.profile.nickname }}" style="display:none;"></div> {% endcomment %}
     <div class="message" id="message-container" content="This is where the zoomer cyberbully each other">
           
     </div>

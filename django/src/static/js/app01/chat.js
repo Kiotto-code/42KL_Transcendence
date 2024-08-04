@@ -1,14 +1,55 @@
 const host = window.location.hostname;
 const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
 const port = window.location.port || (protocol === 'wss:' ? '443' : '80');
-const name = encodeURIComponent(nickname);
+
+const appConfigElement = document.getElementById('app-config');
+const nickname = appConfigElement.getAttribute('nickname');// 
+// const nickname = name;
+// const name = encodeURIComponent(nickname);
+// const nickname = request.user.profile.nickname;
 
 let currentUrl = window.location.href;
 let url = new URL(currentUrl);
 let group_num = url.searchParams.get('room') || 123;
 
-const socketURL = `${protocol}//${host}:${port}/room/${group_num}/?customer_name=${name}`;
+const socketURL = `${protocol}//${host}:${port}/room/${group_num}/?customer_name=${nickname}`;
 let socket = null;
+
+
+
+
+
+async function fetchToken() {
+    const response = await fetch('/chat/');
+    const chat_data = await response.json();
+    return chat_data.token;
+}
+
+async function initialize() {
+    const token = await fetchToken();
+    // Decode the token securely on the server-side or use client-side libraries if safe
+    // Use the token to retrieve or verify nickname information securely
+    // console.log("TASDTASDT grp num hereee:",token.group_num);
+}
+
+initialize();
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 function newSocket() {
     if (socket !== null && socket.readyState === WebSocket.OPEN) {

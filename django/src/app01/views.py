@@ -10,7 +10,8 @@ from django.contrib.auth.decorators import login_required
 # Create your views here.
 def chat(request):
     group_num = request.GET.get('group_num')
-    return render(request, 'chat.html', {'group_num': group_num})
+    print("YESSSSS chat!!!!")
+    return render(request, 'chat.html', {'group_num': group_num}, {'nickname': request.user.profile.nickname})
 
 def friendchat(request):
     group_num = request.GET.get('group_num')

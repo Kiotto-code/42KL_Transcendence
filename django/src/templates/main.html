@@ -35,7 +35,10 @@
         
       {% endblock %}
     </div>
+    <div id="app-config" nickname="{{ request.user.profile.nickname }}" style="display:none;"></div>
+
     <div>
+      
       {% block chat %}
           {% include 'chat.html' %}
         <p>Chat Block Default: include 'chat.html'</p>
@@ -49,7 +52,7 @@
     <script type="module" src="{% static 'js/script.js' %}"></script>
     <script type="module" src="{% static 'js/spa/ajax.js' %}"></script>
     <script type="module" src="{% static 'js/spa/components/component.js' %}"></script>
-    <script>var nickname = "{{ request.user.profile.nickname }}";</script>
+    {% comment %} <script>var nickname = "{{ request.user.profile.nickname }}";</script> {% endcomment %}
     <script src="{% static 'js/app01/chat.js' %}"></script>
   </body>
 </html>

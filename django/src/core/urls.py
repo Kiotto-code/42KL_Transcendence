@@ -27,6 +27,7 @@ urlpatterns = [
     path('', include('allauth.urls')),
     path('', include('base.urls')),
     path('', include('app01.urls')),
+    path("",include(("app01.urls","chat"),namespace="chat"))
     
     # # base_views
     # path('', base_views.home, name='home'),

@@ -34,8 +34,13 @@ def is_online_image_url(url):
 class ChatConsumer(AsyncWebsocketConsumer):
 
     async def websocket_connect(self, message):
-        self.chat_room = '123'
-        # self.chat_room = self.scope['url_route']['kwargs']['room_name']
+        # self.chat_room = '123'
+        self.chat_room = self.scope['url_route']['kwargs']['room']
+        
+        query_params = parse_qs(self.scope['query_string'].decode())
+        self.customer_name = query_params.get('customer_name', ['Anonymous'])[0]
+        # self.customer_name = self.scope['url_route']['kwargs']['nickname']
+
         
         await self.accept()
         if self.channel_layer is not None:
@@ -45,11 +50,8 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
     async def websocket_receive(self, message):
         try:
-            query_params = parse_qs(self.scope['query_string'].decode())
-            self.customer_name = query_params.get('customer_name', ['Anonymous'])[0]
 
             text_data = json.loads(message['text'])
-
             if text_data['type'] == 'message':
                 if " shabi " in text_data['message'] or "傻逼" in text_data['message']:
                     text_data['message'] = f"服务器:【{self.customer_name}】你才是傻逼 "
@@ -77,8 +79,6 @@ class ChatConsumer(AsyncWebsocketConsumer):
         raise StopConsumer()
 
     async def send_chat_message(self, message):
-        query_params = parse_qs(self.scope['query_string'].decode())
-        self.customer_name = query_params.get('customer_name', ['Anonymous'])[0]
         await self.channel_layer.group_send(
             self.chat_room,
             {
@@ -89,8 +89,6 @@ class ChatConsumer(AsyncWebsocketConsumer):
         )
 
     async def send_self_chat_message(self, message):
-        query_params = parse_qs(self.scope['query_string'].decode())
-        self.customer_name = query_params.get('customer_name', ['Anonymous'])[0]
         
         # Create a message with image data
         message = {
@@ -104,8 +102,6 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
 
     async def send_image_message(self, image_data):
-        query_params = parse_qs(self.scope['query_string'].decode())
-        self.customer_name = query_params.get('customer_name', ['Anonymous'])[0]
         await self.channel_layer.group_send(
             self.chat_room,
             {

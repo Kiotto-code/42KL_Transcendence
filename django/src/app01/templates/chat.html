@@ -3,6 +3,9 @@
 {% block chat %}
 
   <main class="update-account layout">
+
+    <div id="app-config" nickname="{{ request.user.profile.nickname }}" style="display:none;"></div>
+
     
     
     {% if request.user.is_authenticated %}

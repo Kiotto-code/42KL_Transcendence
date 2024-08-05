@@ -6,6 +6,8 @@ from app01 import consumers
 websocket_urlpatterns = [
     # xxx/room/x1
 	re_path(r'room/(?P<group>\w+)/$', consumers.ChatConsumer.as_asgi()),
+ 	# re_path(r'room/(?P<room>\w+)/(?P<nickname>\w+)/$', consumers.ChatConsumer.as_asgi()),
+
 	# re_path(r'ws/(?P<group>\w+)/$', consumers.ChatConsumer.as_asgi()),
 ] # something similar to urlpatterns in urls.py
 

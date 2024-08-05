@@ -1,11 +1,15 @@
 from django.urls import re_path
+
+from django.core.asgi import get_asgi_application
 # from base import consumers
 from app01 import consumers
 
 #前面的是路由，后面的是处理函数
 websocket_urlpatterns = [
     # xxx/room/x1
-	re_path(r'room/(?P<room_name>\w+)/$', consumers.ChatConsumer.as_asgi()),
+	re_path(r'room/(?P<room>\w+)/$', consumers.ChatConsumer.as_asgi()),
+	# re_path(r'room/(?P<room>\w+)/(?P<nickname>\w+)/$', consumers.ChatConsumer.as_asgi()),
+ 	# re_path(r'ws/chat/(?P<room>\w+)/(?P<nickname>\w+)/$', consumers.ChatConsumer.as_asgi()),
 	# re_path(r'ws/(?P<group>\w+)/$', consumers.ChatConsumer.as_asgi()),
 ] # something similar to urlpatterns in urls.py
 

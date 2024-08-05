@@ -7,11 +7,41 @@ from django.contrib.auth.decorators import login_required
 # from django.contrib.auth.models import User
 
 
-# Create your views here.
+
+from django.http import JsonResponse
+
 def chat(request):
     group_num = request.GET.get('group_num')
-    print("YESSSSS chat!!!!")
-    return render(request, 'chat.html', {'group_num': group_num}, {'nickname': request.user.profile.nickname})
+    nickname = request.user.profile.nickname
+    response_data = {
+        'group_num': group_num,
+        'nickname': nickname
+    }
+    print('group_num: ',group_num)
+    return JsonResponse(response_data)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# Create your views here.
+# def chat(request):
+#     group_num = request.GET.get('group_num')
+#     print("YESSSSS chat!!!!")
+#     return render(request, 'chat.html', {'group_num': group_num}, {'nickname': request.user.profile.nickname})
 
 def friendchat(request):
     group_num = request.GET.get('group_num')

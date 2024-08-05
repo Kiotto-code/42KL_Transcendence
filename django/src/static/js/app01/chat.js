@@ -4,16 +4,17 @@ const port = window.location.port || (protocol === 'wss:' ? '443' : '80');
 
 const appConfigElement = document.getElementById('app-config');
 const nickname = appConfigElement.getAttribute('nickname');// 
-// const nickname = name;
-// const name = encodeURIComponent(nickname);
-// const nickname = request.user.profile.nickname;
 
 let currentUrl = window.location.href;
 let url = new URL(currentUrl);
-let group_num = url.searchParams.get('room') || 123;
+let group_num = url.searchParams.get('room');
 
-const socketURL = `${protocol}//${host}:${port}/room/${group_num}/?customer_name=${nickname}`;
-let socket = null;
+
+
+
+
+
+
 
 
 
@@ -32,7 +33,30 @@ async function initialize() {
     // console.log("TASDTASDT grp num hereee:",token.group_num);
 }
 
-initialize();
+const chat_token = initialize();
+
+
+
+
+//TESTING API FETCHING
+// async function fetchToken() {
+//     const response = await fetch('/chat/', {
+//         method: 'GET', // or 'POST', depending on the API requirement
+//         headers: {
+    //             'Content-Type': 'application/json',
+//             'Authorization': 'Bearer your-token-here' // if needed
+//             // Add any other headers required by the API
+//         }
+//     });
+
+//     if (!response.ok) {
+//         throw new Error(`HTTP error! status: ${response.status}`);
+//     }
+    
+//     const chat_data = await response.json();
+//     return chat_data.token;
+// }
+// fetchToken();
 
 
 
@@ -49,7 +73,11 @@ initialize();
 
 
 
+// const socketURL = `${protocol}//${host}:${port}/room/${group_num}/${nickname}`;
+const socketURL = `${protocol}//${host}:${port}/room/${group_num}/?customer_name=${nickname}`;
+// const socketURL = `${protocol}//${host}:${port}/room/${group_num}`;
 
+let socket = null;
 
 function newSocket() {
     if (socket !== null && socket.readyState === WebSocket.OPEN) {
@@ -91,6 +119,10 @@ function closeConnect() {
 function handleSocketOpen() {
     console.log("WebSocket connection opened.");
     appendStatusMessage("连接成功", "green", "你有朋友了 (｡♥‿♥｡)\n");
+    socket.send(JSON.stringify({
+        type: 'auth',
+        nickname: 'JohnDoe'
+    }));
 }
 
 function handleSocketMessage(event) {

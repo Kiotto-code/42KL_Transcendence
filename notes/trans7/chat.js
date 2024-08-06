@@ -3,42 +3,73 @@ const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
 const port = window.location.port || (protocol === 'wss:' ? '443' : '80');
 
 const appConfigElement = document.getElementById('app-config');
-const nickname = appConfigElement.getAttribute('nickname');// 
+const nickname = appConfigElement.getAttribute('nickname');
 const group_num = appConfigElement.getAttribute('room');
-// const nickname = name;
-// const name = encodeURIComponent(nickname);
-// const nickname = request.user.profile.nickname;
 
-let currentUrl = window.location.href;
-let url = new URL(currentUrl);
-// let group_num = url.searchParams.get('room') || 456;
+// const nickname = 'fakename_in_js';
 
-const socketURL = `${protocol}//${host}:${port}/room/${group_num}/?customer_name=${nickname}`;
-let socket = null;
 
+// let currentUrl = window.location.href;
+// let url = new URL(currentUrl);
+// let group_num = url.searchParams.get('room');
 
 
 
 
 async function fetchToken() {
-    const response = await fetch('/chat/');
+
+    const queryString = new URLSearchParams({
+        group_num: group_num ? group_num : '123',
+        nickname: 'JohnDoe'
+        // nickname: nickname ? nickname : 'JohnDoe'
+    }).toString();
+
+    const response = await fetch('/chat?' + queryString);
+    // console.log('/chat?' + queryString);
     const chat_data = await response.json();
     return chat_data.token;
 }
 
 async function initialize() {
-    const token = await fetchToken();
-    // Decode the token securely on the server-side or use client-side libraries if safe
-    // Use the token to retrieve or verify nickname information securely
-    // console.log("TASDTASDT grp num hereee:",token.group_num);
-}
+    try {
+        // Fetch the token
+        const token = await fetchToken();
 
+        // Use the token
+        console.log("Retrieved token:", token);
+
+        // Further actions with the token, e.g., decode or use in application
+        // Note: Ensure any sensitive operations are done securely
+
+    } catch (error) {
+        console.error('Error initializing:', error);
+    }
+}
 initialize();
 
 
 
 
 
+//TESTING API FETCHING
+// async function fetchToken() {
+//     const response = await fetch('/chat/', {
+//         method: 'GET', // or 'POST', depending on the API requirement
+//         headers: {
+    //             'Content-Type': 'application/json',
+//             'Authorization': 'Bearer your-token-here' // if needed
+//             // Add any other headers required by the API
+//         }
+//     });
+
+//     if (!response.ok) {
+//         throw new Error(`HTTP error! status: ${response.status}`);
+//     }
+    
+//     const chat_data = await response.json();
+//     return chat_data.token;
+// }
+// fetchToken();
 
 
 
@@ -51,6 +82,15 @@ initialize();
 
 
 
+
+
+
+
+const socketURL = `${protocol}//${host}:${port}/room/${group_num}/${nickname}`;
+// const socketURL = `${protocol}//${host}:${port}/room/${group_num}/?customer_name=${nickname}`;
+// const socketURL = `${protocol}//${host}:${port}/room/${group_num}`;
+
+let socket = null;
 
 function newSocket() {
     if (socket !== null && socket.readyState === WebSocket.OPEN) {
@@ -92,6 +132,10 @@ function closeConnect() {
 function handleSocketOpen() {
     console.log("WebSocket connection opened.");
     appendStatusMessage("连接成功", "green", "你有朋友了 (｡♥‿♥｡)\n");
+    socket.send(JSON.stringify({
+        type: 'auth',
+        nickname: 'JohnDoe'
+    }));
 }
 
 function handleSocketMessage(event) {

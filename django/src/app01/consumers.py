@@ -10,7 +10,7 @@ TABLE = {
     'dog': '/static/images/meme/9299765.jpg',
     'miku': '/static/images/meme/miku_impatient.png',
     'miku_confused': '/static/images/meme/miku_confused.png',
-    'minion': 'https://miro.medium.com/v2/resize:fit:1000/format:webp/1*AmI9wRbXrfIWGESx6eEiTw.gif',
+    'minion': '/static/images/meme/minion.gif'
 }
 
 def is_online_image_url(url):
@@ -34,8 +34,16 @@ def is_online_image_url(url):
 class ChatConsumer(AsyncWebsocketConsumer):
 
     async def websocket_connect(self, message):
-        self.chat_room = '123'
-        # self.chat_room = self.scope['url_route']['kwargs']['room_name']
+        # self.chat_room = '123'
+        self.chat_room = self.scope['url_route']['kwargs']['room_name']
+        
+        query_params = parse_qs(self.scope['query_string'].decode())
+        self.customer_name = query_params.get('customer_name', ['Anonymous'])[0]
+        
+        
+        # self.customer_name = self.scope['url_route']['kwargs']['nickname']
+        # self.customer_name = self.scope['user'].profile.nickname
+        
         
         await self.accept()
         if self.channel_layer is not None:
@@ -45,8 +53,6 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
     async def websocket_receive(self, message):
         try:
-            query_params = parse_qs(self.scope['query_string'].decode())
-            self.customer_name = query_params.get('customer_name', ['Anonymous'])[0]
 
             text_data = json.loads(message['text'])
 
@@ -77,8 +83,6 @@ class ChatConsumer(AsyncWebsocketConsumer):
         raise StopConsumer()
 
     async def send_chat_message(self, message):
-        query_params = parse_qs(self.scope['query_string'].decode())
-        self.customer_name = query_params.get('customer_name', ['Anonymous'])[0]
         await self.channel_layer.group_send(
             self.chat_room,
             {
@@ -89,8 +93,6 @@ class ChatConsumer(AsyncWebsocketConsumer):
         )
 
     async def send_self_chat_message(self, message):
-        query_params = parse_qs(self.scope['query_string'].decode())
-        self.customer_name = query_params.get('customer_name', ['Anonymous'])[0]
         
         # Create a message with image data
         message = {
@@ -104,8 +106,6 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
 
     async def send_image_message(self, image_data):
-        query_params = parse_qs(self.scope['query_string'].decode())
-        self.customer_name = query_params.get('customer_name', ['Anonymous'])[0]
         await self.channel_layer.group_send(
             self.chat_room,
             {

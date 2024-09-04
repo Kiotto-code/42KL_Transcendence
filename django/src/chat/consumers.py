@@ -38,11 +38,11 @@ class ChatConsumer(AsyncWebsocketConsumer):
         print("self.chat_room: " + self.chat_room)
         
         # Check if the ChatRoom exists
-        if not await self.does_chat_room_exist(self.chat_room):
-            error_message = {'type': 'error', 'message': 'Chat room does not exist.'}
-            await self.send(text_data=json.dumps(error_message))
-            await self.close()
-            return
+        # if not await self.does_chat_room_exist(self.chat_room):
+        #     error_message = {'type': 'error', 'message': 'Chat room does not exist.'}
+        #     await self.send(text_data=json.dumps(error_message))
+        #     await self.close()
+        #     return
         
         await self.accept()
 

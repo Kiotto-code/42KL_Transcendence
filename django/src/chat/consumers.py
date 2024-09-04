@@ -70,8 +70,8 @@ class ChatConsumer(AsyncWebsocketConsumer):
                     await self.send_image_message(message_content)
                 else:
                     await self.send_chat_message(message_content)
-            elif message_type == 'image' and 'image' in text_data:
-                await self.send_image_message(text_data['image'])
+            # elif message_type == 'image' and 'image' in text_data:
+            #     await self.send_image_message(text_data['image'])
             else:
                 raise ValueError("Invalid message type or missing content")
 
@@ -112,7 +112,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
     async def send_self_chat_message(self, message):
         message = {
-            "type": "chat.message",
+            "type": "message",
             "name": self.customer_name,
             "message": message
         }

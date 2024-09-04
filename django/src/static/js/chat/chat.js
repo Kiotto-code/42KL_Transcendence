@@ -63,6 +63,8 @@ function handleSocketMessage(event) {
     const data = JSON.parse(event.data);
     if (data.type === 'message') {
         displayChatMessage(data.message, data.name);
+    } else if (data.type === 'error') {
+        displayChatMessage(data.message);
     } else if (data.type === 'image') {
         displayImage(data.image, data.name);
     } else {

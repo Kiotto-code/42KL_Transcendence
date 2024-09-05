@@ -3,31 +3,34 @@
 {% load static %}
 
 {% block drawerStyles %}
-	<link rel="stylesheet" href="{% static 'styles/chat-room.css' %}" />
+    <link rel="stylesheet" href="{% static 'styles/chat-room.css' %}" />
 {% endblock %}
 
 {% block drawerHeader %}
-	<h2>{{ room_name }}</h2>
+    <h2>{{ room_name }}</h2>
 {% endblock %}
 
 {% block drawerContent %}
 <div id="friendroom"></div>
-<div id="chat-config" data-nickname="{{ user.profile.nickname }}" data-room="{{user.room_name}}" style="display:none;"></div>
-{% comment %} <div id="chat-config" data-nickname="{{ user.username }}" data-room="public_room" style="display:none;"></div> {% endcomment %}
+<div id="chat-config" data-nickname="{{ user.profile.nickname }}" data-room="friendroom" style="display:none;"></div>
+{% comment %} <div id="chat-config" data-nickname="{{ user.profile.nickname }}" data-room="{{ room_name }}" style="display:none;"></div> {% endcomment %}
 
 <div class="chat-container">
+    <p>Nickname: {{ user.profile.nickname }}</p>
+    <p>Room Name: {{ room_name }}</p>
     <div class="chat-messages" id="chat-messages">
         <!-- Messages will be appended here dynamically -->
     </div>
     <div class="chat-input">
-        <input type="text" id="message-input" placeholder="Type a message..." onKeyPress=handleMessage(event)>
+        <input type="text" id="message-input" placeholder="Type a message..." onKeyPress="handleMessage(event)">
         <button id="send-button" onclick="sendMessage()">
-			<img src="{% static 'images/icons/send.svg' %}" alt="Send" />
-		</button>
+            <img src="{% static 'images/icons/send.svg' %}" alt="Send" />
+        </button>
     </div>
 </div>
+
 {% endblock %}
 
 {% block drawerScripts %}
-	<script src="{% static 'js/chat/friendroom.js' %}"></script>
+    <script src="{% static 'js/chat/friendroom.js' %}"></script>
 {% endblock %}

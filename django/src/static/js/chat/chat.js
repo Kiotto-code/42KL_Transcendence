@@ -93,6 +93,7 @@ function sendMessage() {
     if (socket.readyState === WebSocket.OPEN) {
         const message = document.getElementById('message-input').value.trim();
         if (message !== '') {
+            const groupNum = appConfigElement.getAttribute('data-room');
             socket.send(JSON.stringify({
                 room_id: groupNum,
                 type: 'message',

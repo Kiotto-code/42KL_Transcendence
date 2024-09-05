@@ -38,7 +38,15 @@ class ChatRoom(BaseModel):
     def get_room_name(self, user):
         if self.is_group_chat:
             return self.name
-        return self.members.exclude(id=user.id).first().username
+        other_member = self.members.exclude(id=user.id).first()
+        if other_member:
+            return other_member.username
+        return 'default_room_name'  # or handle as needed
+
+    # def get_room_name(self, user):
+    #     if self.is_group_chat:
+    #         return self.name
+    #     return self.members.exclude(id=user.id).first().username
 
 class ChatMessage(BaseModel):
     sender = models.ForeignKey(User, related_name='sent_messages', on_delete=models.CASCADE)

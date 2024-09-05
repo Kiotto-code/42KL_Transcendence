@@ -59,6 +59,8 @@ class ChatConsumer(AsyncWebsocketConsumer):
             message_content = text_data.get('message')
             self.receiver_id = text_data.get('receiver_id')
 
+            print("message_type: " + message_type)
+            print("message_content: " + message_content)
             # Process based on message type
             if message_type == 'message' and message_content:
                 if " shabi " in message_content or "傻逼" in message_content:
@@ -164,5 +166,5 @@ class ChatConsumer(AsyncWebsocketConsumer):
             return True
         return False
 
-    async def does_chat_room_exist(self, room_name):
-        return await sync_to_async(ChatRoom.objects.filter(name=room_name).exists)()
+    # async def does_chat_room_exist(self, room_name):
+    #     return await sync_to_async(ChatRoom.objects.filter(name=room_name).exists)()

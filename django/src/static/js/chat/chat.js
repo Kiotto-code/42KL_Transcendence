@@ -2,7 +2,7 @@
 import { getWebSocketConfig, getChatConfig } from './chatConfig.js';
 
 const { host, protocol, port } = getWebSocketConfig();
-const { nickname, groupNum } = getChatConfig();
+const { nickname, groupNum, appConfigElement } = getChatConfig();
 
 // const wsUrl = `${protocol}//${host}:${port}/ws/chat/${roomId}/`;
 let socketURL = `${protocol}//${host}:${port}/room/${groupNum}/?customer_name=${nickname}`;
@@ -12,7 +12,7 @@ console.log(`Connecting to ${socketURL}`);
 // Your WebSocket and chat logic here
 
 // let groupNum = appConfigElement.getAttribute('data-room') || 'private_temp';
-let receiver = appConfigElement.getAttribute('data-receiver') || null;
+// let receiver = appConfigElement.getAttribute('data-receiver') || null;
 
 let socket = null;
 

@@ -63,6 +63,8 @@ export const DRAWERS = {
 	'friend-requests': FriendRequestsDrawer,
 	'search-friend': GenericDrawer,
 	'friend-profile': GenericDrawer,
+
+	// 'friend-room': ChatRoomDrawer,
 	'friend-room': GenericDrawer,
 };
 

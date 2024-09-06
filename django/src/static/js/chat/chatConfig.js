@@ -10,6 +10,7 @@ export function getChatConfig() {
     let appConfigElement = document.getElementById('chat-config');
     return {
         nickname: appConfigElement.getAttribute('data-nickname'),
-        roomId: appConfigElement.getAttribute('data-room')
+        roomId: appConfigElement.getAttribute('data-room'),
+        appConfigElement: appConfigElement,
     };
 }

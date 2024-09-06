@@ -97,6 +97,7 @@ def chat_friendroom_drawer(request):
     
     return render(request, 'components/drawers/chat-friendroom.html', {
         'room': room,
-        'room_name': room.get_room_name(request.user),
+        'room_name': 'no way',
+        # 'room_name': room.get_room_name(request.user),
         'messages': serialized_messages
     })

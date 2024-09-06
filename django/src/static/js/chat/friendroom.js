@@ -19,8 +19,8 @@ let connections = new Map(); // To store WebSocket connections by room ID
 // let socketURL = `${protocol}//${host}:${port}/room/${roomId}/?customer_name=${nickname}`;
 let socket = null;
 
-document.getElementById('send-button').addEventListener('click', sendMessage);
 document.getElementById('message-input').addEventListener('keydown', handleMessage);
+document.getElementById('send-button').addEventListener('click', sendMessage);
 
 if (!roomId) {
     console.error('Room ID is missing');
@@ -283,6 +283,28 @@ function socket_state(socket) {
     const message = stateMessages[state] || 'The connection state is unknown';
     logMessage(message, 'warning');
 }
+
+
+
+
+
+
+
+// const chatList = document.querySelector('.friendroom-list');
+
+// chatList?.addEventListener('click', (e) => {
+//     const chatListItem = e.target.closest('.chat-container');
+
+//     if (chatListItem) {
+//         const roomId = chatListItem.getAttribute('data-roomid');
+//         openDrawer('chat-room', {
+//             url: chatListItem.getAttribute('data-drawer-url'),
+//             state: {
+//                 roomId
+//             }
+//     });
+//     }
+// });
 
 // document.addEventListener('DOMContentLoaded', () => {
 //     // const appConfigElement = document.getElementById('chat-config');

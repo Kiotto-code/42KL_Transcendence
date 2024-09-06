@@ -74,11 +74,24 @@ def chat_room_drawer(request):
     
     room = get_object_or_404(ChatRoom, id=room_id)
     messages = ChatMessage.objects.filter(room=room).order_by('-timestamp')
-    print(f"Room Name: {room.get_room_name(request.user)}") 
+    serialized_messages = ChatMessageSerializer(messages, many=True).data
+    print(f"Room Name: {room.get_room_name(request.user)}")
+    
+    # friend_username = request.GET.get('username')
+    # if not friend_username:
+    #     return HttpResponseBadRequest('Error: username field is required')
+    # friend = get_object_or_404(User, username=friend_username)
+    # print(ChatRoom.get_private_chat_roomname(request.user, friend))
+    # room = get_object_or_404(ChatRoom, name=ChatRoom.get_private_chat_roomname(request.user, friend))
+    # messages = ChatMessage.objects.filter(room=room).order_by('-timestamp')
+    # serialized_messages = ChatMessageSerializer(messages, many=True).data
+    # print(f"Room Name: {room.get_room_name(request.user)}")
+    
+    
     return render(request, 'components/drawers/chat-room.html', {
         'room': room,
         'room_name': room.get_room_name(request.user),
-        'messages': ChatMessageSerializer(messages, many=True).data
+        'messages': serialized_messages
     })
 
 @api_view(['GET'])
@@ -86,18 +99,30 @@ def chat_room_drawer(request):
 def chat_friendroom_drawer(request):
     if not is_ajax_request(request):
         return HttpResponseBadRequest("Error: This endpoint only accepts AJAX requests.")
-
-    room_id = request.GET.get('room_id')
-    if not room_id:
-        return HttpResponseBadRequest("Error: Room ID is required.")
     
-    room = get_object_or_404(ChatRoom, id=room_id)
+    # room_id = request.GET.get('room_id')
+    # if not room_id:
+    #     return HttpResponseBadRequest("Error: Room ID is required.")
+    
+    # room = get_object_or_404(ChatRoom, id=room_id)
+
+
+    # private chat of request.user with request.data.get('username')
+    # get room_id of this private room
+    friend_username = request.GET.get('username')
+    if not friend_username:
+        return HttpResponseBadRequest('Error: username field is required')
+    friend = get_object_or_404(User, username=friend_username)
+    
+    print(ChatRoom.get_private_chat_roomname(request.user, friend))
+    room = get_object_or_404(ChatRoom, name=ChatRoom.get_private_chat_roomname(request.user, friend))
     messages = ChatMessage.objects.filter(room=room).order_by('-timestamp')
     serialized_messages = ChatMessageSerializer(messages, many=True).data
+    print(f"Room Name: {room.get_room_name(request.user)}")
     
     return render(request, 'components/drawers/chat-friendroom.html', {
         'room': room,
-        'room_name': 'no way',
-        # 'room_name': room.get_room_name(request.user),
+        # 'room_name': 'no way',
+        'room_name': room.get_room_name(request.user),
         'messages': serialized_messages
     })

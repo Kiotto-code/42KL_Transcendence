@@ -1,4 +1,4 @@
-import { openDrawer } from '../../drawer.js';
+ import { openDrawer } from '../../drawer.js';
 import { Component } from '../Component.js';
 
 export class FriendListTile extends Component {
@@ -21,7 +21,7 @@ export class FriendListTile extends Component {
 			.addEventListener('click', () => {
 				// openDrawer('chat'); WXR TODO
 				openDrawer('friend-room', {
-					url: `drawer/friend-room?username=${this.friend.user.username}`,
+					url: `drawer/chat-friendroom?username=${this.friend.user.username}`,
 				});
 			});
 

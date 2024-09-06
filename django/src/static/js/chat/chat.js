@@ -1,10 +1,11 @@
 // chat.js
 import { getWebSocketConfig, getChatConfig } from './chatConfig.js';
 
-const { host, protocol, port } = getWebSocketConfig();
-const { nickname, groupNum, appConfigElement } = getChatConfig();
+let { host, protocol, port } = getWebSocketConfig();
+let { nickname, roomId, appConfigElement } = getChatConfig();
 
 // const wsUrl = `${protocol}//${host}:${port}/ws/chat/${roomId}/`;
+let groupNum = roomId
 let socketURL = `${protocol}//${host}:${port}/room/${groupNum}/?customer_name=${nickname}`;
 
 console.log(`Connecting to ${socketURL}`);

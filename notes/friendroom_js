@@ -1,0 +1,237 @@
+class SocketManager {
+    constructor() {
+        this.sockets = {};  // Holds WebSocket connections
+        this.chatContainers = {};  // Holds chat message containers
+        this.maxRetries = 5;
+        this.retryDelay = 3000;
+        this.initializeChatContainers(roomNum);
+        this.setupEventListeners();
+    }
+
+    getSocketURL(roomNum) {
+        const host = window.location.hostname;
+        const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+        const port = window.location.port || (protocol === 'wss:' ? '443' : '80');
+        const nickname = document.getElementById('chat-config').getAttribute('data-nickname');
+        return `${protocol}//${host}:${port}/room/${roomNum}/?customer_name=${nickname}`;
+    }
+
+    // initializeChatContainers() {
+    //     this.chatContainers['friend'] = document.querySelector('#chat-messages');
+    // }
+    initializeChatContainers(roomNum) {
+        if (!this.chatContainers[roomNum]) {
+            this.chatContainers[roomNum] = document.createElement('div');
+            this.chatContainers[roomNum].id = `chat-messages-${roomNum}`;
+            document.body.appendChild(this.chatContainers[roomNum]); // Or append to a specific element
+        }
+    }
+
+    setupEventListeners() {
+        document.getElementById('send-button').addEventListener('click', () => {
+            const messageInput = document.getElementById('message-input');
+            const message = messageInput.value.trim();
+            if (message) {
+                this.sendMessage(message);
+                messageInput.value = '';
+            }
+        });
+
+        document.getElementById('message-input').addEventListener('keydown', (event) => {
+            if (event.key === 'Enter') {
+                const messageInput = document.getElementById('message-input');
+                const message = messageInput.value.trim();
+                if (message) {
+                    this.sendMessage(message);
+                    messageInput.value = '';
+                }
+            }
+        });
+    }
+
+    newSocket(roomNum) {
+        if (this.sockets[roomNum]) {
+            this.sockets[roomNum].close();
+            // this.initializeChatContainers(roomNum);
+        }
+
+        const socketURL = this.getSocketURL(roomNum);
+        const socket = new WebSocket(socketURL);
+
+        socket.onopen = () => this.handleSocketOpen(roomNum);
+        socket.onmessage = (event) => this.handleSocketMessage(event, roomNum);
+        socket.onclose = () => this.handleSocketClose(roomNum);
+        socket.onerror = (error) => this.handleSocketError(error, roomNum);
+
+        this.sockets[roomNum] = socket;
+    }
+
+    handleSocketOpen(roomNum) {
+        console.log(`WebSocket connection opened for room ${roomNum}.`);
+        this.appendStatusMessage(roomNum, 'Connected', 'green', 'You are now connected.');
+    }
+
+    handleSocketMessage(event, roomNum) {
+        const data = JSON.parse(event.data);
+        if (data.type === 'message') {
+            this.displayChatMessage(data.message, data.name, roomNum);
+        } else if (data.type === 'image') {
+            this.displayImage(data.image, data.name, roomNum);
+        } else {
+            console.warn('Unknown message type:', data.type);
+        }
+        this.scrollToBottom(roomNum);
+    }
+
+    handleSocketClose(roomNum) {
+        console.log(`WebSocket connection closed for room ${roomNum}.`);
+        this.appendStatusMessage(roomNum, 'Disconnected', 'red', 'Disconnected from chat.');
+        this.reconnectWebSocket(roomNum);
+    }
+
+    handleSocketError(error, roomNum) {
+        console.error(`WebSocket error for room ${roomNum}:`, error);
+    }
+
+    reconnectWebSocket(roomNum) {
+        let retries = 0;
+
+        const tryReconnect = () => {
+            if (retries >= this.maxRetries) {
+                console.error(`Max reconnect attempts reached for room ${roomNum}. Giving up.`);
+                return;
+            }
+            retries++;
+            console.log(`Reconnecting to room ${roomNum}... (Attempt ${retries}/${this.maxRetries})`);
+            this.newSocket(roomNum);
+        };
+
+        setTimeout(tryReconnect, this.retryDelay);
+    }
+
+    sendMessage(message) {
+        const roomNum = document.getElementById('chat-config').getAttribute('data-room') || '0000';
+        if (this.sockets[roomNum] && this.sockets[roomNum].readyState === WebSocket.OPEN) {
+            this.sockets[roomNum].send(JSON.stringify({
+                room_id: roomNum,
+                type: 'message',
+                name: document.getElementById('chat-config').getAttribute('data-nickname'),
+                message: message,
+            }));
+        } else {
+            this.socketState(roomNum);
+            this.reconnectWebSocket(roomNum);
+        }
+    }
+
+    displayChatMessage(message, name, roomNum) {
+        if (typeof message !== 'string') {
+            console.error('Invalid input: expected a string.');
+            return;
+        }
+
+        const messageContainer = this.chatContainers[roomNum];
+        const messageElement = document.createElement('div');
+        messageElement.style.display = 'flex';
+        messageElement.style.padding = '0 0 5px 0';
+        messageElement.style.lineHeight = '1.3';
+        messageElement.style.width = '100%';
+
+        const username = document.createElement('span');
+        username.textContent = `${name}:`;
+        username.style.color = 'blue';
+        username.style.fontWeight = 'bold';
+        username.style.marginRight = '10px';
+
+        const messageText = document.createElement('span');
+        messageText.classList.add('chat-text');
+        messageText.innerHTML = message;
+
+        messageElement.appendChild(username);
+        messageElement.appendChild(messageText);
+        messageContainer.appendChild(messageElement);
+    }
+
+    displayImage(imageUrl, name, roomNum) {
+        const imageContainer = this.chatContainers[roomNum];
+        const messageWrapper = document.createElement('div');
+        messageWrapper.style.display = 'flex';
+        messageWrapper.style.padding = '0 0 5px 0';
+
+        const username = document.createElement('span');
+        username.textContent = name.endsWith(':') ? name : `${name}:`;
+        username.style.color = 'blue';
+        username.style.fontWeight = 'bold';
+        username.style.marginRight = '10px';
+
+        const imgElement = document.createElement('img');
+        imgElement.src = imageUrl;
+        imgElement.style.maxWidth = '80px';
+        imgElement.style.height = 'auto';
+        imgElement.style.display = 'none'; // Initially hidden
+
+        const placeholderUrl = 'static/images/meme/miku_impatient.png';
+        const placeholder = document.createElement('img');
+        placeholder.src = placeholderUrl;
+        placeholder.style.maxWidth = '100px';
+        placeholder.style.height = 'auto';
+        placeholder.style.display = 'inline-block'; // Initially visible
+
+        const loadingMessage = document.createElement('div');
+        loadingMessage.innerText = 'Loading...';
+        loadingMessage.style.color = 'gray';
+
+        messageWrapper.appendChild(username);
+        messageWrapper.appendChild(loadingMessage); // Add loading message first
+        messageWrapper.appendChild(imgElement);
+        messageWrapper.appendChild(placeholder);
+        imageContainer.appendChild(messageWrapper);
+
+        imgElement.onload = () => {
+            loadingMessage.style.display = 'none'; // Hide loading message
+            placeholder.style.display = 'none';
+            imgElement.style.display = 'inline'; // Show image
+            this.scrollToBottom(roomNum);
+        };
+
+        imgElement.onerror = () => {
+            imgElement.style.display = 'none';
+            placeholder.style.display = 'inline-block';
+            loadingMessage.innerText = 'Failed to load image'; // Update message
+            loadingMessage.style.color = 'red';
+            this.scrollToBottom(roomNum);
+        };
+    }
+
+    appendStatusMessage(roomNum, status, color, message) {
+        const tag = document.createElement('div');
+        tag.innerText = status;
+        tag.style.color = color;
+        tag.append(`\t${message}`);
+        this.chatContainers[roomNum].appendChild(tag);
+    }
+
+    scrollToBottom(roomNum) {
+        const messageContainer = this.chatContainers[roomNum];
+        messageContainer.scrollTop = messageContainer.scrollHeight;
+    }
+
+    socketState(roomNum) {
+        const stateMessages = {
+            [WebSocket.OPEN]: 'The connection is open',
+            [WebSocket.CONNECTING]: 'The connection is connecting',
+            [WebSocket.CLOSING]: 'The connection is closing',
+            [WebSocket.CLOSED]: 'The connection is closed',
+        };
+        const state = this.sockets[roomNum]?.readyState || WebSocket.CLOSED;
+        const message = stateMessages[state] || 'The connection state is unknown';
+        console.log(`%c${message}`, 'color: orange;');
+    }
+}
+
+// Initialize SocketManager
+const socketManager = new SocketManager();
+
+// Establish WebSocket connection
+const roomNum = document.getElementById('chat-config').getAttribute('data-room') || '0000';
+socketManager.newSocket(roomNum);

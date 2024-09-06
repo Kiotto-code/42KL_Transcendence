@@ -12,24 +12,25 @@
 
 {% block drawerContent %}
 <div id="friendroom"></div>
-<div id="chat-config" data-nickname="{{ user.profile.nickname }}" data-room="friendroom" style="display:none;"></div>
-{% comment %} <div id="chat-config" data-nickname="{{ user.profile.nickname }}" data-room="{{ room_name }}" style="display:none;"></div> {% endcomment %}
+{% comment %} <div id="chat-config" data-nickname="{{ user.profile.nickname }}" data-room="friendroom" style="display:none;"></div> {% endcomment %}
+<div id="chat-config" data-nickname="{{ user.profile.nickname }}" data-room="{{ room_name }}" style="display:none;"></div>
 
-    <div class="chat-container">
-        <p>Nickname: {{ user.profile.nickname }}</p>
-        <p>Room Name: {{ room_name }}</p>
-        <div class="chat-messages" id="chat-messages" data-room="friendroom">
-            <!-- Messages will be appended here dynamically -->
-        </div>
-        <div class="chat-input">
-            <input type="text" id="message-input" placeholder="Type a message..." onKeyPress="handleMessage(event)">
-            <button id="send-button" onclick="sendMessage()">
-                <img src="{% static 'images/icons/send.svg' %}" alt="Send" />
-            </button>
-            </div>
+<div class="chat-container">
+    <p>Nickname: {{ user.profile.nickname }}</p>
+    <p>Room Name: {{ room_name }}</p>
+    <div class="chat-messages" id="chat-messages" data-room="{{ room_name }}">
+        <!-- Messages will be appended here dynamically -->
+    </div>
+    <div class="chat-input">
+        <input type="text" id="message-input" placeholder="Type a message..." />
+        <button id="send-button">
+            <img src="{% static 'images/icons/send.svg' %}" alt="Send" />
+        </button>
+    </div>
 </div>
 {% endblock %}
 
 {% block drawerScripts %}
-    <script type="module" src="{% static 'js/chat/friendroom.js' %}" defer></script>
+    <script type="module" src="{% static 'js/chat/friendroom.js' %}"></script>
+    {% comment %} <script src="{% static 'js/chat/friendroom.js' %}"></script> {% endcomment %}
 {% endblock %}

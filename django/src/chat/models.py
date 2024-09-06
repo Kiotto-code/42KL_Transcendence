@@ -24,8 +24,8 @@ class ChatRoom(BaseModel):
         if not self.id:
             self.id = str(uuid.uuid4())
         if self.members.count() == 2:
-            member_ids = sorted([str(member.id) for member in self.members.all()])
-            self.name = f'private_chat_{"_".join(member_ids)}'
+            member_names = sorted([str(member.username) for member in self.members.all()])
+            self.name = "-".join(member_names)
         super().save(*args, **kwargs)
 
     def get_last_message(self):
@@ -34,6 +34,12 @@ class ChatRoom(BaseModel):
     @staticmethod
     def get_private_chats(user):
         return ChatRoom.objects.filter(members=user, is_public=False)
+    
+    @staticmethod
+    def get_private_chat_roomname(user1, user2):
+        member_names = sorted([str(member.username) for member in [user1, user2]])
+        roomname = "-".join(member_names)
+        return roomname
 
     def get_room_name(self, user):
         if self.is_group_chat:

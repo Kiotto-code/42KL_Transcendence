@@ -1,0 +1,37 @@
+{% extends "components/drawers/drawer-left.html" %}
+
+{% load static %}
+
+{% block drawerStyles %}
+    <link rel="stylesheet" href="{% static 'styles/chat-room.css' %}" />
+{% endblock %}
+
+{% block drawerHeader %}
+    <h2>{{ room_name }}</h2>
+{% endblock %}
+
+{% block drawerContent %}
+<div id="friendroom"></div>
+<div id="chat-config" data-nickname="{{ user.profile.nickname }}" data-room="friendroom" style="display:none;"></div>
+{% comment %} <div id="chat-config" data-nickname="{{ user.profile.nickname }}" data-room="{{ room_name }}" style="display:none;"></div> {% endcomment %}
+
+<div class="friendroom-list">
+    <div class="chat-container" data-drawer="friend-room" data-drawer-url="{% url 'chat.friendroom-drawer' %}" data-roomid="{{ chat.id }}">
+        <p>Nickname: {{ user.profile.nickname }}</p>
+        <p>Room Name: {{ room_name }}</p>
+        <div class="chat-messages" id="chat-messages" data-room="friendroom">
+            <!-- Messages will be appended here dynamically -->
+        </div>
+        <div class="chat-input">
+            <input type="text" id="message-input" placeholder="Type a message..." onKeyPress="handleMessage(event)">
+            <button id="send-button" onclick="sendMessage()">
+                <img src="{% static 'images/icons/send.svg' %}" alt="Send" />
+            </button>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block drawerScripts %}
+    <script type="module" src="{% static 'js/chat/friendroom.js' %}" defer></script>
+{% endblock %}

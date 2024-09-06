@@ -1,14 +1,19 @@
-let host = window.location.hostname;
-let protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-let port = window.location.port || (protocol === 'wss:' ? '443' : '80');
+// friendroom.js
+import { getWebSocketConfig, getChatConfig } from './chatConfig.js';
 
-let appConfigElement = document.getElementById('chat-config');
-let nickname = appConfigElement.getAttribute('data-nickname');
-let roomId = appConfigElement.getAttribute('data-room');
-console.log(`Room ID: ${roomId}`);  // Debugging line
+const { host, protocol, port } = getWebSocketConfig();
+const { nickname, roomId } = getChatConfig();
+
+// const wsUrl = `${protocol}//${host}:${port}/ws/friendroom/${roomId}/`;
+let socketURL = `${protocol}//${host}:${port}/drawer/chat-friendroom/${roomId}/?customer_name=${nickname}`;
+
+console.log(`Connecting to ${socketURL}`);
+
+// Your WebSocket and friend room logic here
+
+// console.log(`Room ID: ${roomId}`);  // Debugging line
 let connections = new Map(); // To store WebSocket connections by room ID
 
-let socketURL = `${protocol}//${host}:${port}/drawer/chat-friendroom/${roomId}/?customer_name=${nickname}`;
 // let socketURL = `${protocol}//${host}:${port}/drawer/chat-friendroom/${roomId}/?customer_name=${nickname}`;
 
 // let socketURL = `${protocol}//${host}:${port}/room/${roomId}/?customer_name=${nickname}`;
@@ -19,6 +24,15 @@ document.getElementById('message-input').addEventListener('keydown', handleMessa
 if (!roomId) {
     console.error('Room ID is missing');
 }
+
+
+
+
+
+
+
+
+
 
 function createSocketURL(roomId) {
     if (!roomId) {
@@ -249,20 +263,42 @@ function socket_state(socket) {
     logMessage(message, 'warning');
 }
 
-document.addEventListener('DOMContentLoaded', () => {
-    const appConfigElement = document.getElementById('chat-config');
-    const nickname = appConfigElement.getAttribute('data-nickname');
-    const roomId = appConfigElement.getAttribute('data-room');
+// document.addEventListener('DOMContentLoaded', () => {
+//     // const appConfigElement = document.getElementById('chat-config');
+//     // const nickname = appConfigElement.getAttribute('data-nickname');
+//     // const roomId = appConfigElement.getAttribute('data-room');
 
-    console.log(`Room ID: ${roomId}`);  // Debugging line
-    console.log(`Nickname: ${nickname}`);  // Debugging line
+//     console.log(`Room ID: ${roomId}`);  // Debugging line
+//     console.log(`Nickname: ${nickname}`);  // Debugging line
 
-    if (!roomId) {
-        console.error('Room ID is missing or not defined.');
-        return;
-    }
+//     if (!roomId) {
+//         console.error('Room ID is missing or not defined.');
+//         return;
+//     }
 
-    connectToRoom(roomId);
-});
+//     connectToRoom(roomId);
+// });
 
-// connectToRoom(roomId);
+// document.addEventListener('DOMContentLoaded', () => {
+//     const appConfigElement = document.getElementById('chat-config');
+//     const nickname = appConfigElement?.getAttribute('data-nickname');
+//     const roomId = appConfigElement?.getAttribute('data-room');
+
+//     console.log(`Room ID: ${roomId}`);  // Debugging line
+//     console.log(`Nickname: ${nickname}`);  // Debugging line
+
+//     if (!roomId) {
+//         console.error('Room ID is missing or not defined.');
+//         return;
+//     }
+
+//     if (!nickname) {
+//         console.error('Nickname is missing or not defined.');
+//         return;
+//     }
+
+//     connectToRoom(roomId);
+// });
+
+
+connectToRoom(roomId);

@@ -1,14 +1,19 @@
-let host = window.location.hostname;
-let protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-let port = window.location.port || (protocol === 'wss:' ? '443' : '80');
+// chat.js
+import { getWebSocketConfig, getChatConfig } from './chatConfig.js';
 
-let appConfigElement = document.getElementById('chat-config');
-let nickname = appConfigElement.getAttribute('data-nickname');
-let groupNum = appConfigElement.getAttribute('data-room') || '0000';
+const { host, protocol, port } = getWebSocketConfig();
+const { nickname, groupNum } = getChatConfig();
+
+// const wsUrl = `${protocol}//${host}:${port}/ws/chat/${roomId}/`;
+let socketURL = `${protocol}//${host}:${port}/room/${groupNum}/?customer_name=${nickname}`;
+
+console.log(`Connecting to ${socketURL}`);
+
+// Your WebSocket and chat logic here
+
 // let groupNum = appConfigElement.getAttribute('data-room') || 'private_temp';
 let receiver = appConfigElement.getAttribute('data-receiver') || null;
 
-let socketURL = `${protocol}//${host}:${port}/room/${groupNum}/?customer_name=${nickname}`;
 let socket = null;
 
 document.getElementById('message-input').addEventListener('keydown', handleMessage);

@@ -19,6 +19,7 @@ let connections = new Map(); // To store WebSocket connections by room ID
 // let socketURL = `${protocol}//${host}:${port}/room/${roomId}/?customer_name=${nickname}`;
 let socket = null;
 
+document.getElementById('send-button').addEventListener('click', sendMessage);
 document.getElementById('message-input').addEventListener('keydown', handleMessage);
 
 if (!roomId) {
@@ -26,6 +27,26 @@ if (!roomId) {
 }
 
 
+// document.addEventListener('DOMContentLoaded', () => {
+//     const appConfigElement = document.getElementById('chat-config');
+//     const nickname = appConfigElement?.getAttribute('data-nickname');
+//     const roomId = appConfigElement?.getAttribute('data-room');
+
+//     console.log(`Room ID: ${roomId}`);  // Debugging line
+//     console.log(`Nickname: ${nickname}`);  // Debugging line
+
+//     if (!roomId) {
+//         console.error('Room ID is missing or not defined.');
+//         return;
+//     }
+
+//     if (!nickname) {
+//         console.error('Nickname is missing or not defined.');
+//         return;
+//     }
+
+//     connectToRoom(roomId);
+// });
 
 
 
@@ -279,10 +300,11 @@ function socket_state(socket) {
 //     connectToRoom(roomId);
 // });
 
+
 // document.addEventListener('DOMContentLoaded', () => {
-//     const appConfigElement = document.getElementById('chat-config');
-//     const nickname = appConfigElement?.getAttribute('data-nickname');
-//     const roomId = appConfigElement?.getAttribute('data-room');
+//     // const appConfigElement = document.getElementById('chat-config');
+//     // const nickname = appConfigElement?.getAttribute('data-nickname');
+//     // const roomId = appConfigElement?.getAttribute('data-room');
 
 //     console.log(`Room ID: ${roomId}`);  // Debugging line
 //     console.log(`Nickname: ${nickname}`);  // Debugging line

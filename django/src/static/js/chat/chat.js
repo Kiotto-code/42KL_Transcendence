@@ -17,6 +17,7 @@ let receiver = appConfigElement.getAttribute('data-receiver') || null;
 let socket = null;
 
 document.getElementById('message-input').addEventListener('keydown', handleMessage);
+document.getElementById('send-button').addEventListener('click', sendMessage);
 
 function reconnectWebSocket() {
     let retries = 0;

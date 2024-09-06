@@ -1,14 +1,17 @@
-const host = window.location.hostname;
-const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-const port = window.location.port || (protocol === 'wss:' ? '443' : '80');
+let host = window.location.hostname;
+let protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+let port = window.location.port || (protocol === 'wss:' ? '443' : '80');
 
-const appConfigElement = document.getElementById('chat-config');
-const nickname = appConfigElement.getAttribute('data-nickname');
-const roomId = appConfigElement.getAttribute('data-room');
+let appConfigElement = document.getElementById('chat-config');
+let nickname = appConfigElement.getAttribute('data-nickname');
+let roomId = appConfigElement.getAttribute('data-room');
 console.log(`Room ID: ${roomId}`);  // Debugging line
-const connections = new Map(); // To store WebSocket connections by room ID
+let connections = new Map(); // To store WebSocket connections by room ID
 
-let socketURL = `${protocol}//${host}:${port}/room/${roomId}/?customer_name=${nickname}`;
+let socketURL = `${protocol}//${host}:${port}/drawer/chat-friendroom/${roomId}/?customer_name=${nickname}`;
+// let socketURL = `${protocol}//${host}:${port}/drawer/chat-friendroom/${roomId}/?customer_name=${nickname}`;
+
+// let socketURL = `${protocol}//${host}:${port}/room/${roomId}/?customer_name=${nickname}`;
 let socket = null;
 
 document.getElementById('message-input').addEventListener('keydown', handleMessage);
@@ -23,7 +26,7 @@ function createSocketURL(roomId) {
         return '';
     }
     console.log(`Creating socket URL for room': ${roomId}`);
-    return `${protocol}//${host}:${port}/room/${roomId}/?customer_name=${nickname}`;
+    return `${protocol}//${host}:${port}/drawer/chat-friendroom/${roomId}/?customer_name=${nickname}`;
 }
 
 function connectToRoom(roomId) {
@@ -77,7 +80,7 @@ function handleSocketClose(roomId) {
     console.log(`WebSocket connection closed for room ${roomId}`);
     appendStatusMessage(roomId, 'Disconnected', 'red', `You have been disconnected from room ${roomId}`);
     connections.delete(roomId);
-    reconnectWebSocket(roomId);
+    // reconnectWebSocket(roomId);
 }
 
 function handleSocketError(error) {
@@ -135,6 +138,7 @@ function displayChatMessage(message, name, roomId) {
     }
 
     const messageContainer = document.querySelector(`.chat-messages[data-room="${roomId}"]`);
+    // const messageContainer = document.querySelector('.chat-messages');
     if (!messageContainer) return; // Ensure the message container exists
 
     const messageElement = document.createElement('div');
@@ -161,6 +165,7 @@ function displayChatMessage(message, name, roomId) {
 
 function displayImage(imageUrl, name, roomId) {
     const imageContainer = document.querySelector(`.chat-messages[data-room="${roomId}"]`);
+    // const imageContainer = document.querySelector('.chat-messages');
     if (!imageContainer) return; // Ensure the message container exists
 
     const messageWrapper = document.createElement('div');
@@ -212,6 +217,7 @@ function appendStatusMessage(roomId, status, color, message) {
     tag.style.color = color;
     tag.append(`\t${message}`);
     const messageContainer = document.querySelector(`.chat-messages[data-room="${roomId}"]`);
+    // const messageContainer = document.querySelector('.chat-messages');
     if (messageContainer) {
         messageContainer.appendChild(tag);
     }
@@ -258,3 +264,5 @@ document.addEventListener('DOMContentLoaded', () => {
 
     connectToRoom(roomId);
 });
+
+// connectToRoom(roomId);

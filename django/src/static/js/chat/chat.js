@@ -1,12 +1,12 @@
-const host = window.location.hostname;
-const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-const port = window.location.port || (protocol === 'wss:' ? '443' : '80');
+let host = window.location.hostname;
+let protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+let port = window.location.port || (protocol === 'wss:' ? '443' : '80');
 
-const appConfigElement = document.getElementById('chat-config');
-const nickname = appConfigElement.getAttribute('data-nickname');
-const groupNum = appConfigElement.getAttribute('data-room') || '0000';
-// const groupNum = appConfigElement.getAttribute('data-room') || 'private_temp';
-const receiver = appConfigElement.getAttribute('data-receiver') || null;
+let appConfigElement = document.getElementById('chat-config');
+let nickname = appConfigElement.getAttribute('data-nickname');
+let groupNum = appConfigElement.getAttribute('data-room') || '0000';
+// let groupNum = appConfigElement.getAttribute('data-room') || 'private_temp';
+let receiver = appConfigElement.getAttribute('data-receiver') || null;
 
 let socketURL = `${protocol}//${host}:${port}/room/${groupNum}/?customer_name=${nickname}`;
 let socket = null;

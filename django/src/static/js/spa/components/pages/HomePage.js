@@ -10,7 +10,7 @@ export class HomePage extends Component {
 	}
 
 	startComponent() {
-		// super.startComponent();
+		super.startComponent();
 		// this.snowfall = new Snowfall();
 		// this.snowfall.startSnowfall();
 	}

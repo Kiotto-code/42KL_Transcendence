@@ -116,23 +116,89 @@ class PongConsumer(AsyncWebsocketConsumer):
                     'message': f'Player {self.id}: {message}'
                 })
 
+    # async def pvp_mode(self):
+    #     print("ENTERED PVP MODE FUNCTION")
+    #     if self.player is None:
+    #         await self.close()
+    #     else:
+    #         await self.send(text_data=json.dumps({
+    #             'type': 'player_assignment',
+    #             'player': self.player,
+    #         }))
+    #     # Define the timeout period
+    #     timeout = 4
+    #     start_time = asyncio.get_event_loop().time()
+        
+    #     while True:
+    #         # Check if enough players have joined
+    #         if self.match.get('player1') is not None and self.match.get('player2') is not None:
+    #             await self.channel_layer.group_send(
+    #                 self.room_group_name,
+    #                 {
+    #                     'type': 'start_game',
+    #                     'message': 'channel_layer.group_send: start_game',
+    #                 })
+    #             asyncio.create_task(self.game_loop())
+    #             break
+
+    #         # Check if the timeout has been reached
+    #         elapsed_time = asyncio.get_event_loop().time() - start_time
+    #         if elapsed_time > timeout:
+    #             print("Not enough players to start the game.")
+    #             await self.channel_layer.group_send(
+    #                 self.room_group_name,
+    #                 {
+    #                     'type': 'end_game',
+    #                     'message': '4 seconds timeout! Game over!',
+    #                 })
+    #             break
+
+    #         # Wait a short while before checking again
+    #         await asyncio.sleep(0.5)
     async def pvp_mode(self):
         print("ENTERED PVP MODE FUNCTION")
+
         if self.player is None:
             await self.close()
-        else:
-            await self.send(text_data=json.dumps({
-                'type': 'player_assignment',
-                'player': self.player,
-            }))
-        if (self.match['player1'] != None and self.match['player2'] != None):
-            await self.channel_layer.group_send(
-                self.room_group_name,
-                {
-                    'type': 'start_game',
-                    'message': 'channel_layer.group_send: start_game',
-                })
-            asyncio.create_task(self.game_loop())
+            return
+
+        await self.send(text_data=json.dumps({
+            'type': 'player_assignment',
+            'player': self.player,
+        }))
+
+        timeout = 5
+        check_interval = 0.5
+        start_time = asyncio.get_event_loop().time()
+
+        game_started = False
+
+        while not game_started:
+            if self.match.get('player1') is not None and self.match.get('player2') is not None:
+                await self.channel_layer.group_send(
+                    self.room_group_name,
+                    {
+                        'type': 'start_game',
+                        'message': 'channel_layer.group_send: start_game',
+                    })
+                print("Game started.")
+                asyncio.create_task(self.game_loop())
+                game_started = True
+                break
+            elif self.match.get('player1') is None or self.match.get('player2') is None:
+                elapsed_time = asyncio.get_event_loop().time() - start_time
+                if elapsed_time > timeout:
+                    await self.channel_layer.group_send(
+                        self.room_group_name,
+                        {
+                            'type': 'end_game',
+                            'message': '4 seconds timeout! Game over!',
+                        })
+                    game_started = False
+                    print("Timeout reached. Game over.")
+                    break
+                else:
+                    await asyncio.sleep(check_interval)
 
     async def pve_mode(self):
         print("ENTERED PVE MODE FUNCTION")

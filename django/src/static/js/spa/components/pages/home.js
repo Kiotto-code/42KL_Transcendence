@@ -11,13 +11,13 @@ export class HomePage extends Component {
 
 	startComponent() {
 		super.startComponent();
-		this.snowfall = new Snowfall();
-		this.snowfall.startSnowfall();
+		// this.snowfall = new Snowfall();
+		// this.snowfall.startSnowfall();
 	}
 
 	cleanupComponent() {
 		super.cleanupComponent();
-		this.snowfall.stopSnowfall();
+		// this.snowfall.stopSnowfall();
 	}
 
 	template() {

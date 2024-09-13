@@ -15,15 +15,15 @@ export const ROUTES = {
 	},
 	'/pong/pvp': {
 		component: PongPage,
-		data: { url: '/pong/pvp/' }
+		data: { url: '/pong/pvp' }
 	},
 	'/pong/pve': {
 		component: PongPage,
-		data: { url: '/pong/pve/' }
+		data: { url: '/pong/pve' }
 	},
 	'/pong/tournament': {
 		component: PongPage,
-		data: { url: '/pong/tournament/' }
+		data: { url: '/pong/tournament' }
 	},
 	'^\/pong\/tournament\/[^\/]+\/?$': {
 		component: PongPage,
